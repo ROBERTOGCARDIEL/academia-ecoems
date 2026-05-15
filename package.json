@@ -1,0 +1,6 @@
+{
+  "name": "academia-ecoems",
+  "version": "1.0.0",
+  "description": "Academia ECOEMS - Plataforma de estudio para CCH UNAM e IPN",
+  "engines": { "node": "18.x" }
+}
