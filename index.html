@@ -163,6 +163,7 @@ input:focus{outline:none;border-color:var(--p)}
       <button class="dt" onclick="gt('em')" id="dt-em">📝 Examen</button>
       <button class="dt" onclick="gt('prog')" id="dt-prog">📊 Avance</button>
       <button class="dt" onclick="gt('tips')" id="dt-tips">🧠 Técnicas</button>
+      <button class="dt" onclick="gt('diag')" id="dt-diag">🎯 Diagnóstico</button>
     </div>
     <button class="btn-s btn-sm" onclick="doOut()">Salir</button>
   </nav>
@@ -172,6 +173,7 @@ input:focus{outline:none;border-color:var(--p)}
     <div id="s-em" class="screen"></div>
     <div id="s-prog" class="screen"></div>
     <div id="s-tips" class="screen"></div>
+    <div id="s-diag" class="screen"></div>
     <div id="s-exam" class="screen" style="padding:0;max-width:100%">
       <div id="etop">
         <div style="display:flex;align-items:center;gap:10px">
@@ -213,6 +215,7 @@ input:focus{outline:none;border-color:var(--p)}
     <button class="bn" onclick="gt('em')" id="bt-em"><span>📝</span><span>Examen</span></button>
     <button class="bn" onclick="gt('prog')" id="bt-prog"><span>📊</span><span>Avance</span></button>
     <button class="bn" onclick="gt('tips')" id="bt-tips"><span>🧠</span><span>Técnicas</span></button>
+    <button class="bn" onclick="gt('diag')" id="bt-diag"><span>🎯</span><span>Diag.</span></button>
   </nav>
 </div>
 
@@ -265,7 +268,7 @@ function rSaved(){
 }
 
 // ── NAV ──────────────────────────────────────────────────────────
-const TABS=['dash','study','em','prog','tips'];
+const TABS=['dash','study','em','prog','tips','diag'];
 function gt(id){
   TABS.forEach(t=>{
     document.getElementById('s-'+t).classList.toggle('on',t===id);
@@ -276,6 +279,7 @@ function gt(id){
   document.getElementById('s-res').classList.remove('on');
   stopVoice();
   if(id==='dash')rDash();else if(id==='study')rStudy();else if(id==='em')rEM();else if(id==='prog')rProg();else if(id==='tips')rTips();
+  else if(id==='diag')rDiag();
 }
 
 // ── IA + VOZ ─────────────────────────────────────────────────────
@@ -372,6 +376,21 @@ mate:{n:'Matemáticas',ic:'🔢',cl:'#534AB7',bg:'#EEEDFE',tc:'#3C3489',w:30,les
   {q:'3x + 2y = 12 y x = 2, ¿cuánto vale y?',o:['2','3','4','1'],a:1,e:'6+2y=12 → y=3',ar:'Álgebra'},
   {q:'Media de: 4, 8, 6, 10, 7',o:['7','6','8','7.5'],a:0,e:'35÷5=7',ar:'Estadística'},
   {q:'Desviación estándar=0 significa:',o:['No hay datos','Todos los datos son iguales','Promedio es 0','Datos dispersos'],a:1,e:'Sin variación: todos los datos son exactamente iguales.',ar:'Estadística'},
+  {q:'Si el radio de un círculo se duplica, su área:',o:['Se duplica','Se triplica','Se cuadruplica','Se reduce a la mitad'],a:2,e:'Área=πr². Si r×2: π(2r)²=4πr². El área se CUADRUPLICA.',ar:'Geometría'},
+  {q:'¿Cuál es el MCM de 4 y 6?',o:['2','12','24','8'],a:1,e:'Múltiplos de 4: 4,8,12... Múltiplos de 6: 6,12... El menor común es 12.',ar:'Aritmética'},
+  {q:'Simplifica la fracción 18/24:',o:['3/4','6/8','2/3','9/12'],a:0,e:'MCD(18,24)=6. 18÷6=3, 24÷6=4. Fracción simplificada: 3/4.',ar:'Aritmética'},
+  {q:'Si f(x)=2x+3, ¿para qué valor de x es f(x)=11?',o:['3','4','5','6'],a:1,e:'2x+3=11 → 2x=8 → x=4.',ar:'Funciones'},
+
+  {q:'¿Cuánto es (-3)²?',o:['−9','9','6','−6'],a:1,e:'(-3)²=9. Negativo×negativo=positivo.',ar:'Aritmética'},
+  {q:'¿Cuál es el MCD de 12 y 18?',o:['3','6','9','12'],a:1,e:'Factores de 12: 1,2,3,4,6,12. Factores de 18: 1,2,3,6,9,18. El mayor común es 6.',ar:'Aritmética'},
+  {q:'Un triángulo tiene ángulos de 45° y 60°. El tercero mide:',o:['65°','75°','85°','95°'],a:1,e:'Suma ángulos=180°. 180−45−60=75°.',ar:'Geometría'},
+  {q:'Si 3/4 de un número es 24, el número es:',o:['18','30','32','36'],a:2,e:'(3/4)x=24 → x=32.',ar:'Aritmética'},
+  {q:'¿Cuánto es √144?',o:['11','12','13','14'],a:1,e:'√144=12 porque 12×12=144.',ar:'Aritmética'},
+  {q:'La pendiente de una recta horizontal es:',o:['1','−1','0','Indefinida'],a:2,e:'Recta horizontal no sube ni baja → pendiente=0.',ar:'Funciones'},
+  {q:'¿Cuál es el 15% de 200?',o:['20','25','30','35'],a:2,e:'0.15×200=30.',ar:'Aritmética'},
+  {q:'Perímetro de rectángulo 8cm × 5cm:',o:['40cm','26cm','13cm','20cm'],a:1,e:'P=2×(8+5)=26cm.',ar:'Geometría'},
+  {q:'Si el radio se duplica, el área del círculo:',o:['Se duplica','Se triplica','Se cuadruplica','Se reduce'],a:2,e:'Área=πr². Si r×2: π(2r)²=4πr². Se CUADRUPLICA.',ar:'Geometría'},
+  {q:'Resuelve: 2x + 3 > 7',o:['x>1','x>2','x<2','x>3'],a:1,e:'2x>4 → x>2.',ar:'Álgebra'},
 ]},
 lectura:{n:'Comprensión Lectora',ic:'📖',cl:'#1D9E75',bg:'#E1F5EE',tc:'#085041',w:18,lessons:[
   {t:'Estrategias de lectura eficiente',subs:[
@@ -386,6 +405,12 @@ lectura:{n:'Comprensión Lectora',ic:'📖',cl:'#1D9E75',bg:'#E1F5EE',tc:'#08504
   {q:'Texto con adjetivos para describir un paisaje. Su función:',o:['Argumentar','Narrar','Describir','Exponer'],a:2,e:'Texto DESCRIPTIVO: pinta con palabras usando adjetivos.',ar:'Tipos de texto'},
   {q:'"Coherencia" en un texto significa:',o:['Sin errores ortográficos','Ideas relacionadas lógicamente','Es muy largo','Usa muchos conectores'],a:1,e:'Coherencia=las ideas se conectan lógicamente.',ar:'Redacción'},
   {q:'¿Qué es la idea principal de un texto?',o:['El título','El primer párrafo','La idea central de todo el texto','La conclusión'],a:2,e:'La idea principal es de qué trata el texto en general. No siempre está al inicio.',ar:'Comprensión'},
+
+  {q:'¿Qué función tiene el conector "sin embargo"?',o:['Suma ideas','Indica contraste','Indica causa','Indica consecuencia'],a:1,e:'"Sin embargo" introduce contraste. Conector adversativo.',ar:'Conectores'},
+  {q:'¿Qué es la intención comunicativa de un texto?',o:['La longitud','El tema central','El propósito del autor','El vocabulario'],a:2,e:'La intención comunicativa es el PROPÓSITO del autor al escribir.',ar:'Comprensión'},
+  {q:'En texto argumentativo, los argumentos son:',o:['Las conclusiones','Razones que apoyan la tesis','Los títulos','Solo ejemplos'],a:1,e:'Los argumentos son razones o evidencias que apoyan la tesis.',ar:'Tipos de texto'},
+  {q:'¿Qué significa inferir en comprensión lectora?',o:['Leer rápido','Buscar sinónimos','Deducir algo no escrito directamente','Memorizar'],a:2,e:'Inferir=deducir información implícita no presente literalmente.',ar:'Comprensión'},
+  {q:'¿Qué es un texto expositivo?',o:['Narra una historia','Convence al lector','Informa objetivamente sin opinar','Describe paisajes'],a:2,e:'El texto EXPOSITIVO informa de manera objetiva y neutral.',ar:'Tipos de texto'},
 ]},
 espanol:{n:'Español',ic:'✍️',cl:'#0F6E56',bg:'#E1F5EE',tc:'#04342C',w:15,lessons:[
   {t:'Morfología y sintaxis',subs:[
@@ -404,6 +429,12 @@ espanol:{n:'Español',ic:'✍️',cl:'#0F6E56',bg:'#E1F5EE',tc:'#04342C',w:15,le
   {q:'"Aunque estaba exhausto, terminó." Esta oración es:',o:['Coordinada','Subordinada concesiva','Subordinada causal','Simple'],a:1,e:'"Aunque" = subordinada CONCESIVA.',ar:'Sintaxis'},
   {q:'La palabra "corazón" es:',o:['Grave sin tilde','Aguda con tilde','Esdrújula','Grave con tilde'],a:1,e:'Co-ra-ZÓN: aguda, termina en N → lleva tilde.',ar:'Ortografía'},
   {q:'¿Cuándo se usa punto y coma (;)?',o:['Antes de lista','Para separar oraciones largas relacionadas','Después del saludo','Antes de cita'],a:1,e:'Punto y coma separa oraciones largas relacionadas.',ar:'Ortografía'},
+
+  {q:'¿Cuál es el plural correcto de análisis?',o:['análisises','analisís','análisis','analisses'],a:2,e:'Las esdrújulas terminadas en -s no cambian en plural.',ar:'Morfología'},
+  {q:'¿Cuál tiene error de concordancia?',o:['Las niñas corren','El libro nuevo','Los alumnos estudiosos','La problema difícil'],a:3,e:'"Problema" es masculino: EL problema.',ar:'Morfología'},
+  {q:'¿Cuál es adverbio de tiempo?',o:['aquí','rápidamente','ayer','muy'],a:2,e:'"Ayer" indica cuándo. Es adverbio de TIEMPO.',ar:'Morfología'},
+  {q:'¿Qué función cumple "porque"?',o:['Suma ideas','Contraste','Introduce causa','Introduce consecuencia'],a:2,e:'"Porque" introduce una CAUSA.',ar:'Sintaxis'},
+  {q:'"Haiga" es:',o:['Forma correcta del subjuntivo','Una palabra del habla coloquial válida','Un error; lo correcto es haya','Un arcaísmo aceptado'],a:2,e:'"Haiga" NO existe en español correcto. La forma es HAYA.',ar:'Ortografía'},
 ]},
 bio:{n:'Biología',ic:'🧬',cl:'#3B6D11',bg:'#EAF3DE',tc:'#27500A',w:12,lessons:[
   {t:'La célula y genética',subs:[
@@ -420,6 +451,15 @@ bio:{n:'Biología',ic:'🧬',cl:'#3B6D11',bg:'#EAF3DE',tc:'#27500A',w:12,lessons
   {q:'La meiosis produce:',o:['2 células con 46','4 células con 23','2 células con 23','4 células con 46'],a:1,e:'Meiosis: 4 células haploides con 23 cromosomas.',ar:'Genética'},
   {q:'¿Qué libera la fotosíntesis que respiramos?',o:['CO₂','Glucosa','O₂','H₂O'],a:2,e:'La fotosíntesis produce O₂ como "desecho".',ar:'Metabolismo'},
   {q:'La selección natural establece que:',o:['Las especies no cambian','Los más fuertes siempre sobreviven','Los mejor adaptados dejan más descendencia','Las especies deciden cambiar'],a:2,e:'Los mejor adaptados sobreviven más y transmiten sus ventajas.',ar:'Evolución'},
+  {q:'¿Qué tipo de reproducción genera mayor variabilidad genética?',o:['Asexual','Mitosis','Sexual','Gemación'],a:2,e:'La reproducción SEXUAL combina genes de dos progenitores, generando mayor variabilidad.',ar:'Genética'},
+  {q:'¿Cuál es la función del ribosoma?',o:['Producir energía','Síntesis de proteínas','Almacenar agua','Realizar fotosíntesis'],a:1,e:'Los RIBOSOMAS sintetizan (fabrican) proteínas a partir de instrucciones del ARN.',ar:'Célula'},
+  {q:'¿Qué es un ecosistema?',o:['Solo los animales de un lugar','Solo las plantas de un lugar','Comunidad de seres vivos + su ambiente físico','El conjunto de todas las especies'],a:2,e:'Ecosistema = seres vivos (biótico) + factores físicos como agua, suelo, clima (abiótico).',ar:'Ecología'},
+
+  {q:'Complementaria de ATCG en ADN:',o:['ATCG','TAGC','UAGC','CGTA'],a:1,e:'A-T y G-C. Complementaria de ATCG es TAGC.',ar:'Genética'},
+  {q:'¿Qué proceso convierte glucosa en ATP?',o:['Fotosíntesis','Mitosis','Respiración celular','Meiosis'],a:2,e:'La RESPIRACIÓN CELULAR convierte glucosa+O₂ en ATP.',ar:'Metabolismo'},
+  {q:'¿Cuántos cromosomas tiene una célula humana?',o:['23','46','48','44'],a:1,e:'Las células humanas tienen 46 cromosomas (23 pares).',ar:'Genética'},
+  {q:'¿Qué son los productores en la cadena alimentaria?',o:['Carnívoros','Descomponedores','Plantas y algas','Herbívoros'],a:2,e:'Los PRODUCTORES (plantas, algas) fabrican su alimento por fotosíntesis.',ar:'Ecología'},
+  {q:'¿Qué simbiosis beneficia a ambas especies?',o:['Parasitismo','Comensalismo','Mutualismo','Depredación'],a:2,e:'MUTUALISMO: ambas se benefician. Ej: abejas y flores.',ar:'Ecología'},
 ]},
 quimica:{n:'Química',ic:'⚗️',cl:'#D85A30',bg:'#FAECE7',tc:'#4A1B0C',w:12,lessons:[
   {t:'Átomo, tabla periódica y enlaces',subs:[
@@ -435,6 +475,16 @@ quimica:{n:'Química',ic:'⚗️',cl:'#D85A30',bg:'#FAECE7',tc:'#4A1B0C',w:12,le
   {q:'pH=4 es:',o:['Neutro','Básico','Ácido','Muy básico'],a:2,e:'pH<7=ÁCIDO.',ar:'Soluciones'},
   {q:'CH₄+2O₂→CO₂+2H₂O es:',o:['Síntesis','Descomposición','Combustión','Sustitución'],a:2,e:'COMBUSTIÓN: combustible+O₂→CO₂+H₂O+calor.',ar:'Reacciones'},
   {q:'Símbolo del oro en tabla periódica:',o:['Go','Or','Ge','Au'],a:3,e:'Au del latín "Aurum". Número atómico 79.',ar:'Tabla periódica'},
+  {q:'¿Qué partícula tiene carga negativa en el átomo?',o:['Protón','Neutrón','Electrón','Núcleo'],a:2,e:'El ELECTRÓN tiene carga negativa. El protón tiene carga positiva. El neutrón no tiene carga.',ar:'Átomo'},
+  {q:'¿Qué ley establece que la masa se conserva en una reacción?',o:['Ley de Boyle','Ley de Dalton','Ley de Lavoisier','Ley de Gay-Lussac'],a:2,e:'La Ley de Lavoisier: la masa ni se crea ni se destruye, solo se transforma.',ar:'Reacciones'},
+  {q:'¿Qué tipo de enlace forma el agua (H₂O)?',o:['Iónico','Metálico','Covalente polar','Covalente apolar'],a:2,e:'H y O son no metales → enlace COVALENTE. Como H y O tienen diferente electronegatividad → POLAR.',ar:'Enlace'},
+  {q:'¿Cuál es el número atómico del carbono?',o:['6','8','12','14'],a:0,e:'El carbono tiene 6 protones → número atómico = 6.',ar:'Tabla periódica'},
+
+  {q:'Ácido + Base →',o:['Óxido y agua','Sal y agua','Solo agua','Gas y agua'],a:1,e:'Ácido+Base → SAL+Agua. Neutralización.',ar:'Reacciones'},
+  {q:'Elemento más abundante en la atmósfera:',o:['Oxígeno','Argón','CO₂','Nitrógeno'],a:3,e:'NITRÓGENO (N₂)=~78% de la atmósfera. Oxígeno=~21%.',ar:'Química general'},
+  {q:'¿Qué son los isótopos?',o:['Diferente elemento','Mismo elemento con diferente neutrones','Moléculas iguales','Iones negativos'],a:1,e:'Isótopos: mismo elemento (mismos protones), distinto número de neutrones.',ar:'Átomo'},
+  {q:'¿Cuántos electrones tiene el primer nivel de energía?',o:['2','4','8','18'],a:0,e:'El primer nivel (capa K) contiene máximo 2 electrones.',ar:'Átomo'},
+  {q:'¿Qué tipo de enlace tiene el H₂?',o:['Iónico','Metálico','Covalente apolar','Covalente polar'],a:2,e:'H₂: dos átomos iguales comparten electrones. COVALENTE APOLAR.',ar:'Enlace'},
 ]},
 historia:{n:'Historia',ic:'🏛️',cl:'#BA7517',bg:'#FAEEDA',tc:'#633806',w:10,lessons:[
   {t:'México: de la prehistoria al siglo XX',subs:[
@@ -448,6 +498,16 @@ historia:{n:'Historia',ic:'🏛️',cl:'#BA7517',bg:'#FAEEDA',tc:'#633806',w:10,
   {q:'¿Quién construyó las pirámides del Sol y la Luna?',o:['Aztecas','Mayas','Olmecas','Teotihuacanos'],a:3,e:'Los TEOTIHUACANOS. Los aztecas llegaron siglos después.',ar:'Prehispánico'},
   {q:'Detonante de la 1ª Guerra Mundial:',o:['Invasión de Polonia','Asesinato del archiduque Francisco Fernando','Revolución Rusa','Crisis económica'],a:1,e:'Asesinato del archiduque en Sarajevo (1914).',ar:'Universal'},
   {q:'"Tierra y Libertad" fue lema de:',o:['Porfirio Díaz','Francisco I. Madero','Emiliano Zapata','Venustiano Carranza'],a:2,e:'Zapata lideraba el movimiento agrarista.',ar:'México'},
+  {q:'¿En qué año cayó Tenochtitlán ante los españoles?',o:['1492','1519','1521','1535'],a:2,e:'Tenochtitlán cayó el 13 de agosto de 1521.',ar:'México prehispánico'},
+  {q:'¿Quién fue el último emperador azteca?',o:['Moctezuma II','Cuitláhuac','Cuauhtémoc','Ahuízotl'],a:2,e:'Cuauhtémoc fue el último tlatoani (gobernante) azteca.',ar:'México prehispánico'},
+  {q:'La ONU fue fundada en:',o:['1939','1941','1945','1948'],a:2,e:'La ONU fue fundada en 1945 después de la 2ª Guerra Mundial.',ar:'Universal'},
+  {q:'¿Qué fue el Porfiriato?',o:['Un movimiento indígena','El período de gobierno de Porfirio Díaz (1876-1910)','La época de la Independencia','Un estilo arquitectónico'],a:1,e:'El Porfiriato fue el largo período de gobierno de Porfirio Díaz, que terminó con la Revolución.',ar:'México'},
+
+  {q:'¿En qué año cayó el Muro de Berlín?',o:['1985','1987','1989','1991'],a:2,e:'El Muro de Berlín cayó el 9 de noviembre de 1989.',ar:'Universal'},
+  {q:'¿Quién fue el primer presidente de México?',o:['Iturbide','Guadalupe Victoria','Santa Anna','Juárez'],a:1,e:'Guadalupe Victoria fue el primer presidente constitucional (1824-1829).',ar:'México'},
+  {q:'¿Qué fue el Plan de Iguala?',o:['Inicio de la Revolución','Proclamó la Independencia de México','Constitución de 1824','Tratado con España'],a:1,e:'El Plan de Iguala (1821) de Iturbide proclamó la independencia.',ar:'México'},
+  {q:'¿Qué fue el Tratado de Versalles (1919)?',o:['Inicio 2ª GM','Terminó la 1ª GM','Fundación ONU','División de Alemania'],a:1,e:'El Tratado de Versalles (1919) terminó la 1ª GM e impuso sanciones a Alemania.',ar:'Universal'},
+  {q:'¿Qué fue la Reforma de Juárez?',o:['Una revolución','Leyes que separaron Iglesia del Estado','Un tratado con Francia','La Constitución de 1917'],a:1,e:'La Reforma (1858-1860) separó Iglesia del Estado con leyes como la Ley Lerdo.',ar:'México'},
 ]},
 geo:{n:'Geografía',ic:'🌍',cl:'#185FA5',bg:'#E6F1FB',tc:'#0C447C',w:8,lessons:[
   {t:'Geografía física y México',subs:[
@@ -458,6 +518,14 @@ geo:{n:'Geografía',ic:'🌍',cl:'#185FA5',bg:'#E6F1FB',tc:'#0C447C',w:8,lessons
   {q:'¿Qué movimiento produce el día y la noche?',o:['Traslación','Precesión','Rotación','Nutación'],a:2,e:'ROTACIÓN (24 horas) produce el ciclo día-noche.',ar:'Movimientos'},
   {q:'El clima tropical se caracteriza por:',o:['Temperaturas bajas','4 estaciones','Altas temperaturas y lluvias todo el año','Extrema sequía'],a:2,e:'Tropical: altas temperaturas y lluvias todo el año.',ar:'Climas'},
   {q:'México es "megadiverso" porque:',o:['Es el más grande','Top 5 mundial en biodiversidad','Tiene todos los climas','Tiene muchas culturas'],a:1,e:'México tiene ≈10% de todas las especies. Top 5 mundial.',ar:'México'},
+  {q:'¿Cuál es el río más largo de México?',o:['Río Colorado','Río Balsas','Río Bravo','Río Grijalva'],a:2,e:'El Río Bravo (llamado Río Grande en EE.UU.) es el más largo de México.',ar:'México'},
+  {q:'¿Qué océano baña las costas occidentales de México?',o:['Atlántico','Ártico','Índico','Pacífico'],a:3,e:'El Océano PACÍFICO baña el oeste. El Golfo de México (Atlántico) baña el este.',ar:'México'},
+  {q:'¿Cuál es el bioma más extenso de México?',o:['Selva tropical','Desierto','Bosque templado','Manglar'],a:1,e:'El DESIERTO es el bioma más extenso de México, especialmente en el norte.',ar:'Biomas'},
+
+  {q:'Montaña más alta de México:',o:['Popocatépetl','Iztaccíhuatl','Pico de Orizaba','Malinche'],a:2,e:'El Pico de Orizaba (Citlaltépetl) con 5,636 m es el más alto de México.',ar:'México'},
+  {q:'¿Qué trópico atraviesa México?',o:['Trópico de Capricornio','Ecuador','Trópico de Cáncer','Círculo Polar'],a:2,e:'El TRÓPICO DE CÁNCER (23.5°N) atraviesa México.',ar:'México'},
+  {q:'Densidad de población es:',o:['Total de habitantes','Habitantes por km²','Tasa de natalidad','Crecimiento anual'],a:1,e:'Densidad = habitantes ÷ superficie en km².',ar:'Demografía'},
+  {q:'País más extenso del mundo:',o:['China','Canadá','Estados Unidos','Rusia'],a:3,e:'RUSIA es el país más extenso: ~17 millones de km².',ar:'Mundial'},
 ]},
 fisica:{n:'Física',ic:'⚡',cl:'#534AB7',bg:'#EEEDFE',tc:'#3C3489',w:8,lessons:[
   {t:'Mecánica — movimiento y fuerzas',subs:[
@@ -469,6 +537,14 @@ fisica:{n:'Física',ic:'⚡',cl:'#534AB7',bg:'#EEEDFE',tc:'#3C3489',w:8,lessons:
   {q:'Masa se duplica, fuerza igual. La aceleración:',o:['Se duplica','Se reduce a la mitad','No cambia','Se anula'],a:1,e:'a=F/m. Si m duplica: a=mitad.',ar:'Dinámica'},
   {q:'Energía cinética de 4kg a 6m/s:',o:['24J','144J','72J','48J'],a:2,e:'Ec=½×4×36=72J. La v va al CUADRADO.',ar:'Energía'},
   {q:'La 3ª Ley de Newton dice:',o:['F=ma','Los cuerpos en reposo permanecen en reposo','A toda acción corresponde reacción igual y opuesta','Aceleración proporcional a la fuerza'],a:2,e:'3ª Ley: acción-reacción igual y opuesta.',ar:'Dinámica'},
+  {q:'¿Qué tipo de energía tiene un objeto en movimiento?',o:['Potencial gravitacional','Potencial elástica','Cinética','Térmica'],a:2,e:'Energía CINÉTICA = energía del movimiento. Ec=½mv²',ar:'Energía'},
+  {q:'Una pelota cae desde una altura. ¿Qué energía tiene al llegar al suelo?',o:['Solo potencial','Solo cinética','Mitad de cada una','Ninguna'],a:1,e:'Al llegar al suelo: altura=0 → Ep=0. Toda la energía se convirtió en CINÉTICA.',ar:'Energía'},
+  {q:'¿Qué unidad mide la fuerza en el Sistema Internacional?',o:['Joule','Watt','Newton','Pascal'],a:2,e:'La fuerza se mide en NEWTONS (N). F=ma → kg×m/s²=N.',ar:'Dinámica'},
+
+  {q:'¿Con qué velocidad cae un objeto en 3 segundos? (g=10)',o:['10m/s','20m/s','30m/s','40m/s'],a:2,e:'v=g×t=10×3=30m/s.',ar:'Cinemática'},
+  {q:'¿Qué mide el Joule?',o:['Fuerza','Velocidad','Energía o trabajo','Potencia'],a:2,e:'El JOULE (J) es la unidad de energía y trabajo.',ar:'Energía'},
+  {q:'¿Qué energía tiene un resorte comprimido?',o:['Cinética','Térmica','Potencial elástica','Nuclear'],a:2,e:'El resorte comprimido tiene ENERGÍA POTENCIAL ELÁSTICA.',ar:'Energía'},
+  {q:'¿Qué es la inercia?',o:['Fuerza de gravedad','Tendencia a mantener el estado de movimiento o reposo','La aceleración','La masa'],a:1,e:'INERCIA (1ª Ley Newton): cuerpo mantiene su estado sin fuerza externa.',ar:'Dinámica'},
 ]},
 civica:{n:'Formación Cívica y Ética',ic:'⚖️',cl:'#993556',bg:'#FBEAF0',tc:'#4B1528',w:5,lessons:[
   {t:'Derechos humanos y sistema político',subs:[
@@ -478,6 +554,10 @@ civica:{n:'Formación Cívica y Ética',ic:'⚖️',cl:'#993556',bg:'#FBEAF0',tc
   {q:'¿Cuántos senadores integran el Senado?',o:['500','300','128','64'],a:2,e:'Senado: 128. Cámara de Diputados: 500.',ar:'Sistema político'},
   {q:'Derechos de 2ª generación son:',o:['Civiles y políticos','Económicos, sociales y culturales','Derechos colectivos','Derechos ambientales'],a:1,e:'2ª generación: educación, trabajo, salud, vivienda.',ar:'Derechos humanos'},
   {q:'Declaración Universal de DD.HH. adoptada en:',o:['1917','1945','1948','1960'],a:2,e:'ONU adoptó la Declaración el 10 de diciembre de 1948.',ar:'Derechos humanos'},
+
+  {q:'¿Cuántos años dura el mandato presidencial en México?',o:['4 años','5 años','6 años','7 años'],a:2,e:'El presidente de México gobierna 6 años sin reelección.',ar:'Sistema político'},
+  {q:'Ley suprema de México:',o:['Código Civil','Ley Federal del Trabajo','Constitución de 1917','Código Penal'],a:2,e:'La Constitución Política de 1917 es la ley suprema de México.',ar:'Sistema político'},
+  {q:'¿Qué es la democracia representativa?',o:['El pueblo gobierna directo','Ciudadanos eligen representantes','Un rey decide','Solo votan los ricos'],a:1,e:'En democracia representativa los ciudadanos ELIGEN representantes que gobiernan.',ar:'Sistema político'},
 ]},
 hverbal:{n:'Habilidad Verbal',ic:'🗣️',cl:'#993556',bg:'#FBEAF0',tc:'#4B1528',w:20,lessons:[
   {t:'Sinónimos, antónimos y analogías',subs:[
@@ -514,8 +594,286 @@ hmat:{n:'Habilidad Matemática',ic:'🔷',cl:'#185FA5',bg:'#E6F1FB',tc:'#0C447C'
   {q:'Serie: 100, 50, 25, 12.5, ?',o:['6','6.25','5','7'],a:1,e:'Razón constante de ÷2. 12.5÷2=6.25.',ar:'Sucesiones'},
   {q:'Ana tiene el doble de edad que Luis. La suma de sus edades es 36. ¿Cuántos años tiene Ana?',o:['12','18','24','20'],a:2,e:'Luis=X, Ana=2X. X+2X=36 → 3X=36 → X=12. Ana=24.',ar:'Razonamiento'},
   {q:'Serie: 2, 4, 8, 16, 32, ?',o:['48','60','64','56'],a:2,e:'Razón constante de ×2. 32×2=64.',ar:'Sucesiones'},
+  {q:'Serie: 5, 10, 20, 40, ?',o:['60','70','80','100'],a:2,e:'Razón ×2. 40×2=80.',ar:'Sucesiones'},
+  {q:'Mezclas: 3L de agua + 2L de jugo. ¿Qué % es jugo?',o:['30%','40%','50%','60%'],a:1,e:'Jugo=2L de 5L total. 2/5=0.40=40%.',ar:'Razonamiento'},
+  {q:'Serie: 1, 3, 6, 10, 15, ?',o:['18','20','21','25'],a:2,e:'Diferencias: +2,+3,+4,+5,+6. 15+6=21.',ar:'Sucesiones'},
+  {q:'Un comerciante compra a $80 y vende a $100. ¿Cuál es su ganancia?',o:['15%','20%','25%','30%'],a:2,e:'Ganancia=20. % ganancia=20/80×100=25%.',ar:'Razonamiento'},
+]},
+anatomia:{n:'Anatomía y Salud',ic:'🫀',cl:'#993556',bg:'#FBEAF0',tc:'#4B1528',w:8,lessons:[
+  {t:'Sistemas del cuerpo humano',subs:[
+    {h:'Sistema digestivo y respiratorio',b:'DIGESTIVO: boca→esófago→estómago→intestino delgado (absorción de nutrientes)→intestino grueso→recto→ano.\n\nÓrganos accesorios: hígado (produce bilis), páncreas (insulina), vesícula biliar.\n\nRESPIRATORIO: nariz→faringe→laringe→tráquea→bronquios→bronquiolos→alvéolos.\nEn los ALVÉOLOS ocurre el intercambio gaseoso: O₂ entra a la sangre, CO₂ sale.',tp:'Digestivo: BEBISIR = Boca, Esófago, Bilis(hígado), Intestinos, Sistema grueso, Intestino Recto.\nRespiración: el intercambio gaseoso ocurre en los ALVÉOLOS.',ex:'¿Dónde se absorben los nutrientes? → Intestino DELGADO\n¿Dónde ocurre el intercambio gaseoso? → ALVÉOLOS'},
+    {h:'Sistema circulatorio y nervioso',b:'CIRCULATORIO:\nCorazón: 4 cámaras (2 aurículas + 2 ventrículos).\nAurículas: reciben sangre. Ventrículos: bombean sangre.\nSangre oxigenada: lado izquierdo. Sangre sin oxígeno: lado derecho.\nArterias: llevan sangre del corazón. Venas: llevan sangre al corazón.\n\nNERVIOSO:\nCentral: encéfalo (cerebro, cerebelo, bulbo) + médula espinal.\nPeriférico: nervios que conectan con el cuerpo.',tp:'Izquierda=oxigenada (roja). Derecha=desoxigenada (azul).\nArterias ALEJAN del corazón. Venas VIENEN al corazón.',ex:'¿Qué lado del corazón bombea sangre oxigenada? → IZQUIERDO\n¿Qué vasos llevan sangre al corazón? → VENAS'},
+    {h:'Sistema óseo, muscular y endocrino',b:'ÓSEO: 206 huesos en el adulto. Funciones: soporte, protección, movimiento, producción de células sanguíneas.\nHueso más largo: fémur. Hueso más pequeño: estribo (oído).\n\nMUSCULAR: 3 tipos: esquelético (voluntario), liso (involuntario, órganos), cardíaco (corazón).\n\nENDOCRINO (glándulas y hormonas):\nPáncreas→insulina (regula glucosa). Tiroides→tiroxina (metabolismo).\nHipófisis→hormona del crecimiento. Suprarrenales→adrenalina.',tp:'Insulina=páncreas=glucosa. Adrenalina=suprarrenales=emergencia.\nFémur=hueso más largo. Estribo=más pequeño.',ex:'¿Qué hormona regula el azúcar en sangre? → INSULINA (páncreas)\n¿Cuántos huesos tiene el adulto? → 206'},
+  ]},
+  {t:'Salud y enfermedades',subs:[
+    {h:'Enfermedades, nutrición y salud reproductiva',b:'ENFERMEDADES:\nInfecciosas (bacterias/virus): gripa, tuberculosis, dengue.\nCrónico-degenerativas: diabetes, hipertensión, cáncer.\nHereditarias: hemofilia, daltonismo.\n\nNUTRICIÓN:\nCarbohidratos: energía rápida. Proteínas: construcción. Grasas: reserva energética.\nVitaminas y minerales: reguladores. Agua: 60% del cuerpo.\n\nSALUD REPRODUCTIVA:\nPubertad: cambios hormonales en adolescencia.\nMéxico: ITS más comunes son VIH y clamidia (prevención con condón).',tp:'Diabetes=falta de insulina (páncreas). Dengue=virus transmitido por mosquito Aedes aegypti.',ex:'¿Qué nutriente da energía inmediata? → CARBOHIDRATOS\n¿Cómo se transmite el dengue? → Por picadura del mosquito Aedes aegypti'},
+  ]},
+],q:[
+  {q:'¿En qué parte del sistema digestivo se absorben los nutrientes?',o:['Estómago','Intestino grueso','Intestino delgado','Esófago'],a:2,e:'El intestino DELGADO es donde se absorben los nutrientes hacia la sangre.',ar:'Digestivo'},
+  {q:'¿En qué estructura ocurre el intercambio gaseoso en los pulmones?',o:['Bronquios','Tráquea','Alvéolos','Bronquiolos'],a:2,e:'En los ALVÉOLOS: O₂ entra a la sangre y CO₂ sale.',ar:'Respiratorio'},
+  {q:'¿Qué lado del corazón bombea sangre oxigenada al cuerpo?',o:['Derecho','Izquierdo','Ambos','Ninguno'],a:1,e:'El lado IZQUIERDO bombea sangre oxigenada (roja) hacia el cuerpo.',ar:'Circulatorio'},
+  {q:'¿Qué vasos sanguíneos llevan sangre DE REGRESO al corazón?',o:['Arterias','Capilares','Venas','Aorta'],a:2,e:'Las VENAS llevan sangre al corazón. Las arterias la llevan del corazón.',ar:'Circulatorio'},
+  {q:'¿Cuántos huesos tiene el cuerpo humano adulto?',o:['180','196','206','216'],a:2,e:'El cuerpo humano adulto tiene 206 huesos.',ar:'Óseo'},
+  {q:'¿Qué hormona regula los niveles de glucosa en sangre?',o:['Adrenalina','Tiroxina','Insulina','Estrógeno'],a:2,e:'La INSULINA, producida por el páncreas, regula la glucosa en sangre.',ar:'Endocrino'},
+  {q:'¿Qué nutriente es la principal fuente de energía inmediata?',o:['Proteínas','Grasas','Vitaminas','Carbohidratos'],a:3,e:'Los CARBOHIDRATOS son la fuente de energía más rápida para el cuerpo.',ar:'Nutrición'},
+  {q:'¿Qué mosquito transmite el dengue?',o:['Anopheles','Culex','Aedes aegypti','Mansonia'],a:2,e:'El dengue es transmitido por el mosquito Aedes aegypti.',ar:'Salud'},
+  {q:'¿Qué tipo de músculo forma el corazón?',o:['Esquelético','Liso','Cardíaco','Involuntario liso'],a:2,e:'El corazón está formado por músculo CARDÍACO, involuntario y exclusivo del corazón.',ar:'Muscular'},
+  {q:'¿Cuál es el hueso más largo del cuerpo humano?',o:['Húmero','Tibia','Fémur','Radio'],a:2,e:'El FÉMUR (hueso del muslo) es el más largo del cuerpo.',ar:'Óseo'},
+]},
+lectura2:{n:'Comprensión Lectora — Textos',ic:'📚',cl:'#1D9E75',bg:'#E1F5EE',tc:'#085041',w:15,lessons:[
+  {t:'Textos completos para practicar',subs:[
+    {h:'Cómo leer textos del ECOEMS',b:'El ECOEMS presenta textos de 200-400 palabras seguidos de 3-5 preguntas.\n\nESTRATEGIA PROBADA:\n1. Lee el TÍTULO y predice el tema (10 segundos)\n2. Lee las PREGUNTAS antes del texto\n3. Lee el texto buscando respuestas\n4. Las respuestas siguen el ORDEN del texto\n5. Respuestas "correctas" son las que el texto DICE, no lo que tú opinas\n\nTRAMPAS COMUNES:\n• Opciones que son verdaderas pero el texto no las menciona\n• Opciones con palabras del texto pero significado distinto\n• Generalizaciones excesivas ("siempre", "nunca", "todos")',tp:'Lee las preguntas PRIMERO. Así sabes qué buscar cuando lees el texto.',ex:'Si el texto habla de "algunos animales", la respuesta correcta no dirá "todos los animales".\nSi el texto dice "puede causar", la respuesta correcta no dirá "siempre causa".'},
+    {h:'Texto 1: La fotosíntesis (Ciencias)',b:'La fotosíntesis es el proceso mediante el cual las plantas convierten la energía lumínica en energía química. Este proceso ocurre principalmente en los cloroplastos, orgánulos que contienen clorofila, el pigmento verde responsable de capturar la luz solar. Durante la fotosíntesis, las plantas absorben dióxido de carbono del aire y agua del suelo. Con la energía solar, transforman estos compuestos en glucosa, que sirve como alimento para la planta, y liberan oxígeno como producto secundario. Sin la fotosíntesis, la vida en la Tierra sería imposible, pues es la base de todas las cadenas alimentarias y la principal fuente de oxígeno atmosférico.',tp:'Idea principal: la fotosíntesis convierte energía lumínica en química.\nOrganelo clave: cloroplasto. Reactivos: CO₂ + H₂O. Productos: glucosa + O₂.',ex:'P: ¿Dónde ocurre la fotosíntesis?\nR: En los CLOROPLASTOS (el texto lo dice explícitamente)\n\nP: ¿Qué libera la fotosíntesis?\nR: OXÍGENO (producto secundario)'},
+    {h:'Texto 2: La Revolución Industrial (Historia)',b:'La Revolución Industrial, iniciada en Inglaterra a finales del siglo XVIII, transformó radicalmente las formas de producción y organización social. La introducción de la máquina de vapor permitió mecanizar procesos que antes dependían del trabajo humano o animal. Las fábricas comenzaron a concentrar a miles de trabajadores en condiciones frecuentemente precarias, mientras que los propietarios de los medios de producción acumulaban enormes fortunas. Este proceso generó el surgimiento de dos clases sociales claramente diferenciadas: la burguesía industrial y el proletariado. Las condiciones laborales injustas impulsaron el nacimiento de los primeros movimientos obreros y sindicatos, sentando las bases del derecho laboral moderno.',tp:'Ideas principales: dónde comenzó, cuándo, qué cambió, qué clases sociales surgió, qué consecuencias tuvo.',ex:'P: ¿Dónde inició la Rev. Industrial?\nR: INGLATERRA (dato explícito)\n\nP: ¿Qué clases surgieron?\nR: Burguesía y proletariado'},
+  ]},
+],q:[
+  {q:'Según el Texto 1, ¿cuál es el PRODUCTO SECUNDARIO de la fotosíntesis?',o:['Glucosa','Dióxido de carbono','Agua','Oxígeno'],a:3,e:'El texto dice: "liberan oxígeno como producto secundario". La glucosa es el producto principal.',ar:'Texto 1'},
+  {q:'Según el Texto 1, ¿qué pigmento captura la luz solar?',o:['Glucosa','Clorofila','Cloroplasto','Melanina'],a:1,e:'El texto dice: "clorofila, el pigmento verde responsable de capturar la luz solar".',ar:'Texto 1'},
+  {q:'Del Texto 1, ¿qué afirmación NO está respaldada por el texto?',o:['La fotosíntesis ocurre en cloroplastos','Las plantas absorben CO₂','Todos los seres vivos hacen fotosíntesis','El oxígeno es producto secundario'],a:2,e:'El texto habla de PLANTAS, no de "todos los seres vivos". Esa generalización no está en el texto.',ar:'Texto 1'},
+  {q:'Según el Texto 2, ¿en qué país inició la Revolución Industrial?',o:['Francia','Alemania','Estados Unidos','Inglaterra'],a:3,e:'El texto dice: "iniciada en Inglaterra a finales del siglo XVIII".',ar:'Texto 2'},
+  {q:'Según el Texto 2, ¿qué tecnología fue clave en la Revolución Industrial?',o:['El ferrocarril','La máquina de vapor','La electricidad','El telégrafo'],a:1,e:'El texto dice: "La introducción de la máquina de vapor permitió mecanizar procesos".',ar:'Texto 2'},
+  {q:'Del Texto 2, ¿cuál fue una CONSECUENCIA de la Revolución Industrial?',o:['Desaparición de las ciudades','Surgimiento de movimientos obreros','Eliminación de la pobreza','Reducción de fábricas'],a:1,e:'El texto dice: "Las condiciones laborales injustas impulsaron el nacimiento de los primeros movimientos obreros".',ar:'Texto 2'},
+  {q:'Según el Texto 2, ¿qué clase social trabajaba en las fábricas?',o:['La burguesía','El proletariado','Los aristócratas','Los comerciantes'],a:1,e:'El proletariado eran los trabajadores de las fábricas. La burguesía eran los dueños.',ar:'Texto 2'},
+  {q:'La idea principal del Texto 1 es:',o:['Las plantas son verdes','La fotosíntesis es un proceso vital que convierte energía lumínica en química','El oxígeno es necesario para vivir','Los cloroplastos contienen clorofila'],a:1,e:'La idea principal abarca TODO el texto: la fotosíntesis como proceso de conversión de energía.',ar:'Texto 1'},
+
+  {q:'Texto 1 — ¿Cuál es la función principal del texto sobre fotosíntesis?',o:['Convencer de cuidar plantas','Narrar la vida de una planta','Informar sobre el proceso de fotosíntesis','Describir el color verde'],a:2,e:'El texto informa objetivamente sobre el proceso → texto EXPOSITIVO cuya función es informar.',ar:'Texto 1'},
+  {q:'Texto 2 — ¿Cuál fue el efecto social más importante de la Revolución Industrial?',o:['Creación de ferrocarriles','Surgimiento del proletariado y movimientos obreros','Eliminación de la monarquía','Mayor producción agrícola'],a:1,e:'El texto señala que las condiciones injustas generaron movimientos obreros y sindicatos.',ar:'Texto 2'},
+
+
+  {q:'Texto 3 — Según el texto, ¿cómo es la distribución del agua en México?',o:['Equitativa en todo el país','El norte tiene más agua que el sur','El norte árido recibe menos del 30% del agua','El sur tiene problemas de sequía'],a:2,e:'El texto dice: "el norte árido recibe menos del 30% del agua disponible".',ar:'Texto 3 — Agua'},
+  {q:'Texto 3 — ¿Qué agrava el problema del agua según el texto?',o:['La falta de ríos','La contaminación por desechos industriales y residuales','El exceso de lluvia en el norte','La expansión de ciudades'],a:1,e:'El texto menciona "la contaminación de ríos y cuerpos de agua por desechos industriales".',ar:'Texto 3 — Agua'},
+  {q:'Texto 3 — ¿Cuántos mexicanos no tienen acceso a agua potable?',o:['Más de 5 millones','Más de 7 millones','Más de 9 millones','Más de 12 millones'],a:2,e:'El texto dice exactamente: "más de 9 millones de mexicanos no tienen acceso a agua potable".',ar:'Texto 3 — Agua'},
+  {q:'Texto 3 — La intención principal del texto es:',o:['Narrar una historia de sequía','Convencer de ahorrar agua','Informar sobre la crisis hídrica en México','Describir los ríos mexicanos'],a:2,e:'El texto presenta datos objetivos sobre la crisis del agua → texto EXPOSITIVO informativo.',ar:'Texto 3 — Agua'},
 ]},
 };
+
+// ══════════════════════════════════════════════════════════
+// TEMARIO COMPLETO — Reemplaza las lecciones básicas con contenido profundo
+// ══════════════════════════════════════════════════════════
+(function(){
+
+var TL = {
+mate:[
+  {t:'Aritmética — Números y operaciones fundamentales',subs:[
+    {h:'Clasificación de los números',
+     b:'NATURALES (N): Los que usamos para contar: 1, 2, 3... No incluyen negativos ni 0.\n\nENTEROS (Z): Incluyen negativos, cero y positivos: ...-3,-2,-1,0,1,2,3...\n\nRACIONALES (Q): Cualquier número que se puede escribir como fracción p/q.\nEjemplos: 3/4, 0.5, -2, 1.333... (el decimal periódico también es racional)\n\nIRRACIONALES: NO se pueden escribir como fracción exacta. Decimal infinito no periódico.\nEjemplos: π=3.1415..., √2=1.41421..., √3, √5\n\nREALES (R): Todos los anteriores. Todo número que existe en la recta numérica.\n\nNÚMEROS PRIMOS: divisibles solo entre 1 y ellos mismos.\n2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31...\nOJO: 1 NO es primo. 2 es el único primo par.',
+     tp:'Jerarquía: N ⊂ Z ⊂ Q ⊂ R\n(los naturales son un subconjunto de los enteros, etc.)\n\nPara saber si es irracional: si √n no es exacto, es irracional.\n√4=2 (racional). √5=2.236... (irracional).',
+     ex:'¿Es √16 racional?\n√16=4 (exacto) → SÍ, racional ✓\n\n¿Es √7 racional?\n√7=2.6457... (infinito) → NO, irracional ✓\n\nClasifica 0.666...:\nSe escribe como 2/3 → RACIONAL ✓'},
+    {h:'Jerarquía de operaciones PEMDAS',
+     b:'JERARQUÍA (el orden que SIEMPRE debes seguir):\n1° Paréntesis ( ), corchetes [ ], llaves { }\n2° Exponentes y raíces\n3° Multiplicación y División (de izquierda a derecha)\n4° Suma y Resta (de izquierda a derecha)\n\nOPERACIONES CON NEGATIVOS:\n• Suma mismo signo: suma y conserva el signo. (-3)+(-5)=-8\n• Suma diferente signo: resta y toma el signo del mayor. (-7)+(3)=-4\n• Multiplicación: igual signo=positivo. diferente signo=negativo.\n  (-3)×(-4)=+12.  (-3)×(4)=-12\n\nVALOR ABSOLUTO |x|: distancia al cero, siempre positivo.\n|−5|=5.  |+3|=3.  |0|=0',
+     tp:'Mnemotecnia: "Por Favor Mi Estimada Amiga Susi"\nP=Paréntesis, F=Fuerzas(exponentes), M=Multiplicación, E=División, A=Adición, S=Sustracción\n\nRegla de signos al multiplicar:\nIgual signo = positivo. Diferente signo = negativo.\n(+)(+)=+ . (−)(−)=+ . (+)(−)=− . (−)(+)=−',
+     ex:'3 + 4 × 2 − 1\nPrimero ×: 4×2=8\nLuego: 3+8−1=10 ✓ (NO es 13)\n\n(2+3)² − 4×2\nParéntesis: (5)²=25\nMult: 4×2=8\nResta: 25−8=17 ✓\n\n−3×(−4)+2×(−5)\n−3×−4=+12.  2×−5=−10\n12+(−10)=2 ✓'},
+    {h:'Fracciones, decimales y porcentajes',
+     b:'FRACCIONES:\n• Propia: numerador < denominador (3/4)\n• Impropia: numerador > denominador (7/3)\n• Mixto: entero + fracción (2¼ = 9/4)\n\nSUMA/RESTA: busca MCM como denominador común.\n½ + ⅓ → MCM=6 → 3/6+2/6=5/6\n\nMULTIPLICACIÓN: numerador×numerador / denominador×denominador.\n(2/3)×(4/5) = 8/15\n\nDIVISIÓN: invierte la segunda fracción y multiplica.\n(2/3)÷(4/5) = (2/3)×(5/4) = 10/12 = 5/6\n\nPORCENTAJES:\n• X% de N = (X/100)×N\n• ¿Qué % es A de B? = (A/B)×100\n• Aumento X%: nuevo = original×(1+X/100)\n• Descuento X%: nuevo = original×(1−X/100)',
+     tp:'Atajos de porcentaje:\n10% → divide entre 10\n25% → divide entre 4\n50% → divide entre 2\n1% → divide entre 100\n\nPara el MCM: descompón en factores primos y toma los de mayor exponente.',
+     ex:'1/2 + 1/3: MCM=6 → 3/6+2/6=5/6 ✓\n\n35% de 400:\n10%=40.  30%=120.  5%=20\n35%=140 ✓\n\nDescuento 20% en $250:\n250×(1−0.20)=250×0.80=$200 ✓'},
+    {h:'Potencias, raíces y leyes de exponentes',
+     b:'POTENCIAS: a^n = a×a×a... (n veces)\na^0 = 1.  a^1 = a.  a^(−n) = 1/a^n\n\nLEYES DE EXPONENTES:\n• a^m × a^n = a^(m+n)  ← misma base: SUMA exponentes\n• a^m ÷ a^n = a^(m−n)  ← misma base: RESTA exponentes\n• (a^m)^n = a^(m×n)  ← potencia de potencia: MULTIPLICA\n• (a×b)^n = a^n × b^n\n\nRAÍCES CUADRADAS PERFECTAS (memoriza):\n√1=1, √4=2, √9=3, √16=4, √25=5, √36=6, √49=7, √64=8, √81=9, √100=10, √121=11, √144=12, √169=13, √225=15',
+     tp:'Ley clave: multiplicar con misma base = SUMAR exponentes.\n2³×2⁴=2^7 (NO es 2^12, eso sería (2³)⁴)\n\nCuadrados a memorizar: 5²=25, 12²=144, 13²=169, 15²=225',
+     ex:'2³×2⁴=2^7=128 ✓\n(3²)³=3^6=729 ✓\n2^(−3)=1/8=0.125 ✓\n√(49/25)=7/5 ✓'},
+    {h:'MCM y MCD — aplicaciones',
+     b:'FACTORIZACIÓN EN PRIMOS: descomponer en factores primos.\n12=2²×3.  18=2×3².  30=2×3×5\n\nMCD (Máximo Común Divisor):\nToma factores COMUNES con exponente MENOR.\nMCD(12,18): comunes=2,3. MCD=2¹×3¹=6\n\nMCM (Mínimo Común Múltiplo):\nToma TODOS los factores con exponente MAYOR.\nMCM(12,18): todos=2²×3²=4×9=36\n\nAPLICACIONES:\n• MCM → sumar fracciones (denominador común)\n• MCD → simplificar fracciones\n\nVERIFICACIÓN: MCD × MCM = a × b',
+     tp:'MCD: COMUNES con exponente MENOR\nMCM: TODOS con exponente MAYOR\n\nVerifica: MCD(12,18)×MCM(12,18)=6×36=216=12×18 ✓',
+     ex:'MCD y MCM de 24 y 36:\n24=2³×3.  36=2²×3²\nMCD=2²×3=12.  MCM=2³×3²=72\nVerifica: 12×72=864=24×36 ✓\n\nSimplifica 18/24:\nMCD(18,24)=6.  18÷6=3, 24÷6=4\nFracción: 3/4 ✓'},
+  ]},
+  {t:'Álgebra — Ecuaciones y sistemas',subs:[
+    {h:'Expresiones algebraicas y ecuaciones lineales',
+     b:'EXPRESIONES ALGEBRAICAS:\nMonomio: un solo término (3x², −5xy)\nPolinomio: suma de monomios (3x²+2x−1)\nGrado: el exponente mayor\n\nSUMA/RESTA DE POLINOMIOS: combina términos semejantes.\n(3x²+2x−1)+(x²−5x+4)=4x²−3x+3\n\nMULTIPLICACIÓN: distributiva.\n3x(2x−5)=6x²−15x\n\nECUACIONES LINEALES: ax+b=c\nPasos:\n1° Elimina paréntesis\n2° Agrupa x a un lado, constantes al otro\n3° Despeja x\n4° VERIFICA sustituyendo\n\nPrincipio de igualdad: lo que haces de un lado, lo haces del otro.',
+     tp:'La ecuación es una BALANZA.\nCuando pasas un término al otro lado, CAMBIA de signo.\n3x+5=20 → 3x=20-5=15 (el +5 pasa como −5)\n\nSiempre VERIFICA sustituyendo tu respuesta en la ecuación original.',
+     ex:'5x−10=20\n5x=30 → x=6\nVerifica: 5(6)−10=20 ✓\n\n3(x+2)=2(x+5)\n3x+6=2x+10\nx=4 ✓\n\nx/3+2=5 → x/3=3 → x=9 ✓'},
+    {h:'Ecuaciones cuadráticas y factorización',
+     b:'ECUACIÓN CUADRÁTICA: ax²+bx+c=0\n\nMÉTODO 1 — FACTORIZACIÓN (más rápido):\nBusca r,s tales que r×s=c y r+s=b.\n(x−r)(x−s)=0 → x=r o x=s\n\nMÉTODO 2 — FÓRMULA GENERAL:\nx=(−b±√(b²−4ac))/(2a)\n\nDISCRIMINANTE Δ=b²−4ac:\n• Δ>0: dos soluciones reales\n• Δ=0: una solución (doble)\n• Δ<0: sin soluciones reales\n\nFACTORIZACIÓN ESPECIAL:\n• Factor común: ax+ay=a(x+y)\n• Diferencia de cuadrados: a²−b²=(a+b)(a−b)\n• Trinomio cuadrado perfecto: a²+2ab+b²=(a+b)²',
+     tp:'Para factorizar x²+bx+c:\nBusca dos números que se MULTIPLIQUEN para dar c y se SUMEN para dar b.\n\nDiferencia de cuadrados: muy frecuente en el ECOEMS.\n¡Memoriza (a+b)(a−b)=a²−b²!',
+     ex:'x²−7x+12:\n−3×−4=12, −3+−4=−7\n(x−3)(x−4)=0 → x=3 o x=4 ✓\n\n4x²−25=(2x+5)(2x−5) ← diferencia cuadrados ✓\n\nx²+6x+9=(x+3)² ← cuadrado perfecto ✓'},
+    {h:'Sistemas de ecuaciones e inecuaciones',
+     b:'SISTEMA DE ECUACIONES: dos ecuaciones, dos incógnitas.\n\nMÉTODO SUMA/RESTA:\n1° Multiplica para igualar coeficientes de una variable\n2° Suma o resta para eliminar esa variable\n3° Resuelve la variable restante\n4° Sustituye para encontrar la otra\n\nMÉTODO SUSTITUCIÓN:\n1° Despeja una variable en una ecuación\n2° Sustituye en la otra\n3° Resuelve y encuentra ambas variables\n\nINECUACIONES: como ecuaciones pero con <,>,≤,≥.\nIMPORTANTE: al multiplicar/dividir por número NEGATIVO, la desigualdad CAMBIA de sentido.',
+     tp:'Truco suma/resta: si tienes x+y=A y x−y=B, suma las dos ecuaciones → 2x=A+B.\n\nSiempre VERIFICA sustituyendo en AMBAS ecuaciones originales.',
+     ex:'x+y=10 y x−y=4\nSuma: 2x=14 → x=7\n7+y=10 → y=3\nSolución: (7,3) ✓\n\n2x+y=8 y x−y=1\nDe la 2ª: x=y+1\n2(y+1)+y=8 → y=2, x=3 ✓\n\nInecuación: 3x−6>9 → x>5 ✓'},
+  ]},
+  {t:'Geometría — Figuras planas y espacio',subs:[
+    {h:'Áreas y perímetros de figuras planas',
+     b:'CUADRADO (lado l): Área=l². Perímetro=4l\nRECTÁNGULO (base b, altura h): Área=b×h. Perímetro=2b+2h\nTRIÁNGULO (base b, altura h): Área=(b×h)÷2. Perímetro=suma de 3 lados\nCÍRCULO (radio r, π≈3.14): Área=πr². Circunferencia=2πr\nTRAPECIO (bases b1,b2, altura h): Área=((b1+b2)×h)÷2\nROMBO (diagonales d1,d2): Área=(d1×d2)÷2\n\nÁNGULOS INTERNOS DE POLÍGONOS:\nSuma=(n−2)×180°\nTriángulo=180°. Cuadrado=360°. Pentágono=540°. Hexágono=720°. Octágono=1080°',
+     tp:'Áreas en unidades² (cm², m²). Perímetros en unidades lineales (cm, m).\n\nSi duplicas el radio del círculo, el área se CUADRUPLICA (no duplica).\nRazón: Área nueva=π(2r)²=4πr²',
+     ex:'Triángulo b=12, h=8: (12×8)÷2=48cm² ✓\nCírculo r=5: 3.14×25=78.5cm² ✓\nHexágono: (6−2)×180=720°. Cada ángulo=120° ✓\n\nSi duplico el radio de r a 2r:\nÁrea original=πr². Nueva=π(2r)²=4πr² → se CUADRUPLICA ✓'},
+    {h:'Teorema de Pitágoras y relaciones en triángulos',
+     b:'TEOREMA DE PITÁGORAS (triángulos rectángulos):\nc²=a²+b²\nc=hipotenusa (el lado más largo, opuesto al ángulo recto)\na,b=catetos\n\nTERNAS PITAGÓRICAS (memoriza):\n(3,4,5): 9+16=25 ✓\n(5,12,13): 25+144=169 ✓\n(8,15,17): 64+225=289 ✓\n(7,24,25)\nMultiplos: (6,8,10), (9,12,15), (10,24,26)\n\nCLASIFICACIÓN DE TRIÁNGULOS:\nPor lados: equilátero(3 iguales), isósceles(2 iguales), escaleno(todos diferentes)\nPor ángulos: acutángulo(<90°), rectángulo(=90°), obtusángulo(>90°)\nPropiedad: suma de ángulos internos=180°\n\nTRIÁNGULOS SEMEJANTES: mismos ángulos → lados proporcionales',
+     tp:'(3,4,5) y (5,12,13) aparecen mucho en el ECOEMS. Si ves esos catetos, ya sabes la hipotenusa.\n\nTambién aplica al revés: hipotenusa=5 y cateto=3 → el otro cateto=4.',
+     ex:'Catetos 6 y 8: c=√(36+64)=√100=10 (terna ×2) ✓\nHipotenusa=13, cateto=5: b=√(169−25)=√144=12 ✓\n\nPoste de 5m cae, punta toca a 3m de la base:\n¿A qué altura se rompió?\nHipotenusa=5, cateto horizontal=3 → vertical=4m ✓'},
+    {h:'Volúmenes y áreas de sólidos geométricos',
+     b:'CUBO (arista a): V=a³. Área=6a²\nCAJA RECTANGULAR (l,a,h): V=l×a×h. Área=2(la+lh+ah)\nCILINDRO (r,h): V=πr²h. Área lateral=2πrh\nCONO (r,h): V=(1/3)πr²h\nESFERA (r): V=(4/3)πr³. Área=4πr²\nPIRÁMIDE (base B, altura h): V=(1/3)×B×h\n\nREGLA DE ORO: pirámide y cono siempre tienen factor 1/3.\nCaben 3 pirámides en un prisma de igual base y altura.',
+     tp:'Para cilindro: base circular (πr²) × altura h\nPara prisma/caja: base × altura (cualquier forma de base)\n\nLa esfera y el cono son los más difíciles. Memoriza sus fórmulas.',
+     ex:'Cilindro r=5, h=10: V=3.14×25×10=785cm³ ✓\nPirámide base 4×4, h=9: V=(1/3)×16×9=48cm³ ✓\nCubo arista 3: V=27cm³. Área=54cm² ✓'},
+  ]},
+  {t:'Funciones y gráficas',subs:[
+    {h:'Función lineal — análisis de rectas',
+     b:'FUNCIÓN LINEAL: y=mx+b\nm=pendiente (inclinación). b=intercepto en y.\n\nPENDIENTE m=(y₂−y₁)/(x₂−x₁)\n• m>0: recta sube (izq→der)\n• m<0: recta baja\n• m=0: recta horizontal\n• m indefinida: recta vertical\n\nRECTAS PARALELAS: misma pendiente (m₁=m₂)\nRECTAS PERPENDICULARES: m₁×m₂=−1\n\nECUACIÓN dado un punto (x₁,y₁) y pendiente m:\ny−y₁=m(x−x₁)\n\nVALOR DE LA FUNCIÓN: sustituye x en la expresión.\nf(x)=2x+3. f(4)=2(4)+3=11',
+     tp:'Para graficar y=mx+b:\n1° Marca (0,b) en el eje y\n2° Desde ahí, sube m unidades verticales y 1 horizontal\n3° Une los puntos\n\nLa pendiente es el "paso": cuánto sube y por cada 1 que avanza x.',
+     ex:'Pendiente por (2,5) y (4,11):\nm=(11−5)/(4−2)=3 ✓\n\nEcuación por (1,3) con m=2:\ny−3=2(x−1) → y=2x+1 ✓\n\n¿Paralelas: y=2x+3 e y=2x−1?\nm₁=m₂=2 → SÍ, paralelas ✓'},
+    {h:'Función cuadrática — parábolas',
+     b:'FUNCIÓN CUADRÁTICA: y=ax²+bx+c (PARÁBOLA)\n\na>0: abre ARRIBA (forma U) → tiene MÍNIMO\na<0: abre ABAJO (forma ∩) → tiene MÁXIMO\n|a| grande: parábola estrecha\n|a| pequeño: parábola abierta\n\nVÉRTICE (punto más alto o bajo):\nx_v=−b/(2a).  y_v=f(x_v)\n\nEJE DE SIMETRÍA: x=−b/(2a)\nINTERCEPTO CON Y: c (cuando x=0)\n\nDISCRIMINANTE Δ=b²−4ac:\n• Δ>0: dos cortes con eje x\n• Δ=0: toca el eje x en el vértice\n• Δ<0: no corta el eje x',
+     tp:'El vértice es el punto más importante de la parábola.\nSi a>0 → vértice es el MÍNIMO. Si a<0 → vértice es el MÁXIMO.\n\nSi preguntan "¿para qué x es el valor máximo/mínimo?" → x=−b/(2a)',
+     ex:'y=x²−4x+3. Vértice:\nx_v=4/2=2. y_v=4−8+3=−1\nVértice: (2,−1) ✓\n\ny=−2x²+8x−5: a=−2<0 → abre ABAJO → tiene MÁXIMO ✓\n\ny=x²−6x+9: Δ=36−36=0 → UN punto de corte con eje x ✓'},
+  ]},
+  {t:'Estadística, probabilidad y trigonometría',subs:[
+    {h:'Estadística descriptiva',
+     b:'MEDIA (promedio): suma÷cantidad\nMEDIANA: valor central (ORDENA primero)\n• n impar: posición (n+1)/2\n• n par: promedio de los dos centrales\nMODA: el valor que más se repite\nRANGO: máximo−mínimo\n\nDESVIACIÓN ESTÁNDAR σ: qué tan dispersos están los datos.\nσ=0 → todos los datos son IGUALES.\n\nFRECUENCIA: cuántas veces aparece un valor.\nFRECUENCIA RELATIVA: frecuencia/total (porcentaje)',
+     tp:'Las 3 M:\nMedia=calcula. Mediana=está en el Medio. Moda=la más Popular.\n\nSiempre ORDENA antes de calcular mediana.\nPuede haber varias modas (bimodal, multimodal) o ninguna.',
+     ex:'Datos: 3,7,7,2,9,4,7,1\nOrdenados: 1,2,3,4,7,7,7,9\nMedia=40/8=5 ✓\nMediana=(4+7)/2=5.5 ✓\nModa=7 (aparece 3 veces) ✓\nRango=9−1=8 ✓'},
+    {h:'Probabilidad',
+     b:'PROBABILIDAD: P(A)=casos favorables/casos totales\n0≤P(A)≤1\n\nCOMPLEMENTO: P(no A)=1−P(A)\n\nEVENTOS MUTUAMENTE EXCLUYENTES (no pueden ocurrir juntos):\nP(A o B)=P(A)+P(B)\n\nEVENTOS INDEPENDIENTES (uno no afecta al otro):\nP(A y B)=P(A)×P(B)\n\nEVENTOS DEPENDIENTES:\nP(A y B)=P(A)×P(B|A)\n\nCOMBINATORIA:\nFactorial: n!=n×(n−1)×...×2×1\nPermutaciones: P(n,r)=n!/(n−r)!\nCombinaciones: C(n,r)=n!/(r!(n−r)!)',
+     tp:'P=0: imposible. P=1: seguro. P=0.5: 50-50.\n\nEventos independientes: MULTIPLICA.\nEventos excluyentes: SUMA.\n\nRecuerda: la probabilidad SIEMPRE es entre 0 y 1.',
+     ex:'Dado de 6: P(par)=3/6=1/2=50% ✓\nBaraja 52: P(as de corazones)=1/52 ✓\nMoneda 2 veces: P(2 caras)=1/2×1/2=1/4=25% ✓\n\nUrna con 3 rojas y 2 azules. Sin reposición:\nP(roja y luego azul)=(3/5)×(2/4)=6/20=3/10 ✓'},
+    {h:'Trigonometría — SOH-CAH-TOA y ángulos notables',
+     b:'En triángulo RECTÁNGULO:\nSEN(θ)=Opuesto/Hipotenusa\nCOS(θ)=Adyacente/Hipotenusa\nTAN(θ)=Opuesto/Adyacente=sen/cos\n\nRELACIÓN PITAGÓRICA: sen²+cos²=1\n\nÁNGULOS NOTABLES (MEMORIZA):\n30°: sen=1/2, cos=√3/2≈0.866, tan=1/√3≈0.577\n45°: sen=√2/2≈0.707, cos=√2/2≈0.707, tan=1\n60°: sen=√3/2≈0.866, cos=1/2, tan=√3≈1.732\n90°: sen=1, cos=0, tan=indefinido\n\nsen y cos de ángulos complementarios:\nsen(θ)=cos(90°−θ)\nsen(30°)=cos(60°)=0.5',
+     tp:'Mnemotecnia: SOH-CAH-TOA\nSen=Opuesto/Hipotenusa\nCOs=Adyacente/Hipotenusa\nTan=Opuesto/Adyacente\n\nPatrón del 30-45-60:\nsen: 1/2, √2/2, √3/2 (aumenta)\ncos: √3/2, √2/2, 1/2 (disminuye)\ntan(45°)=1 siempre.',
+     ex:'Ángulo 30°, hipotenusa=10:\nOpuesto=10×0.5=5. Adyacente=10×0.866≈8.66 ✓\n\nÁngulo 45°, cateto=5:\nHipotenusa=5/0.707≈7.07 ✓\n\ntan(θ)=3/4, opuesto=3:\nAdyacente=4. Hipotenusa=√(9+16)=5 ✓'},
+  ]},
+],
+
+lectura:[
+  {t:'Tipos de texto y estructura',subs:[
+    {h:'Los 5 tipos de texto que aparecen en el ECOEMS',
+     b:'TEXTO NARRATIVO: Cuenta una historia o suceso. Tiene personajes, tiempo, lugar, conflicto y desenlace.\nEstructura: Introducción → Nudo → Desenlace\nPalabras clave: "había una vez", "de repente", "entonces", "al final"\nEjemplos: cuentos, novelas, fábulas, crónicas\n\nTEXTO DESCRIPTIVO: Pinta con palabras. Detalla características.\nMuchos adjetivos, comparaciones, metáforas.\nEjemplos: descripción de un paisaje, retrato de una persona\n\nTEXTO ARGUMENTATIVO: Convence al lector de adoptar una postura.\nEstructura: Tesis → Argumentos → Conclusión\nPalabras clave: "porque", "por lo tanto", "sin embargo", "cabe señalar"\nEjemplos: editorial, ensayo, carta de opinión\n\nTEXTO EXPOSITIVO: Informa objetivamente. NO opina. Solo hechos y datos.\nNeutral, claro, ordenado.\nEjemplos: artículo científico, enciclopedia, libro de texto\n\nTEXTO INSTRUCTIVO: Explica cómo hacer algo paso a paso.\nUsa verbos en imperativo: "añade", "mezcla", "presiona"\nEjemplos: receta de cocina, manual de usuario',
+     tp:'Pregunta clave: "¿Cuál es la INTENCIÓN del autor?"\n¿Entretener/contar? → Narrativo\n¿Mostrar cómo es algo? → Descriptivo\n¿Convencer? → Argumentativo\n¿Informar sin opinar? → Expositivo\n¿Explicar cómo hacer? → Instructivo',
+     ex:'"Deberías votar porque la democracia requiere participación..." → ARGUMENTATIVO ✓\n"La CDMX tiene 9 millones de habitantes y 16 alcaldías." → EXPOSITIVO ✓\n"La mariposa extendió sus alas color añil hacia la jacaranda..." → DESCRIPTIVO ✓\n"Para hacer guacamole: machaca los aguacates, añade limón..." → INSTRUCTIVO ✓\n"De repente Juan escuchó un ruido extraño en el sótano..." → NARRATIVO ✓'},
+    {h:'Estructura del texto — Idea principal y secundarias',
+     b:'IDEA PRINCIPAL: el asunto central del que habla TODO el texto.\nNo siempre está en el primer párrafo. Puede estar al final o implícita.\nSi la quitas, el texto pierde sentido.\n\nIDEAS SECUNDARIAS: detalles, ejemplos, datos que apoyan la idea principal.\nImportantes pero no esenciales.\n\nPÁRRAFO: unidad básica.\nOración temática: expresa la idea del párrafo.\nOraciones de desarrollo: amplían y ejemplifican.\nOración de cierre: resume o concluye.\n\nCOHESIÓN: las ideas se conectan con pronombres, artículos y conectores.\nCOHERENCIA: las ideas tienen unidad temática y lógica.\n\nCONECTORES TEXTUALES:\nAdición: además, también, asimismo, incluso\nContraste: pero, sin embargo, aunque, no obstante\nCausa: porque, ya que, puesto que\nConsecuencia: por lo tanto, entonces, así que\nOrden: primero, luego, finalmente, en conclusión',
+     tp:'Para encontrar la idea principal:\n1° Pregunta: "¿De qué habla TODO el texto?"\n2° La idea principal siempre abarca todo lo demás\n3° Las opciones incorrectas solo hablan de una PARTE del texto\n\nTrampa del ECOEMS: opciones que son verdaderas pero solo cubren un párrafo.',
+     ex:'Texto sobre "El calentamiento global":\nIdea principal: "El calentamiento global amenaza la vida en la Tierra"\nIdeas secundarias: aumento de temperatura, derretimiento de glaciares, extinción de especies\n\n¿Cuál es la idea principal?\n✗ "Los glaciares se derriten" → solo una parte ✗\n✓ "El calentamiento global es un problema urgente para toda la vida en la Tierra" ✓'},
+  ]},
+  {t:'Comprensión y análisis de textos',subs:[
+    {h:'Información explícita vs inferencias y vocabulario en contexto',
+     b:'INFORMACIÓN EXPLÍCITA: está ESCRITA literalmente en el texto. La puedes señalar.\n"El texto DICE que..."\n\nINFERENCIA: NO está escrita pero se desprende lógicamente del texto.\n"Del texto SE PUEDE DEDUCIR que..."\nRequiere razonamiento basado en el texto.\n\nTIPOS DE INFERENCIAS:\n• Causal: deduce causas o consecuencias\n• De vocabulario: deduce significado de palabras por el contexto\n• Evaluativa: juzgas la intención o calidad\n• Predictiva: anticipas lo que puede pasar\n\nVOCABULARIO EN CONTEXTO:\nSi no conoces una palabra, usa las palabras alrededor para deducir su significado.\nIdentifica si la palabra desconocida es positiva o negativa.',
+     tp:'Trampa común: una opción repite información del texto → eso es EXPLÍCITA, no inferencia.\nInferencia correcta: es lógica y se apoya en datos del texto.\nInferencia incorrecta: no está respaldada por el texto.\n\nRegla de oro: LA RESPUESTA CORRECTA SIEMPRE ESTÁ RESPALDADA POR EL TEXTO.',
+     ex:'Texto: "El paciente presentaba fiebre de 39°C, escalofríos y dolor de garganta."\n\nExplícita: "¿Qué síntomas tenía?" → Fiebre, escalofríos, dolor de garganta ✓\nInferencia válida: "Probablemente tiene una infección" → lógico pero no escrito ✓\nInferencia inválida: "Tiene gripa" → el texto no lo afirma ✗\n\nVocabulario: "Era un hombre erudito y perspicaz"\nContexto: erudito=muy sabio → perspicaz también debe ser positivo/inteligente → AGUDO, PENETRANTE ✓'},
+    {h:'Estrategias de lectura eficiente para el ECOEMS',
+     b:'MÉTODO PQR:\nP=Previsualiza: lee título, subtítulos y primera oración de cada párrafo (15 seg)\nQ=Pregunta: convierte los títulos en preguntas que el texto debería responder\nR=Responde: lee buscando las respuestas a tus preguntas\n\nESTRATEGIA PARA EL ECOEMS:\n1° Lee las PREGUNTAS antes del texto (sabes qué buscar)\n2° Haz lectura rápida del texto\n3° Para cada pregunta, vuelve al texto a buscar la respuesta\n4° Las respuestas siguen el ORDEN del texto\n\nERRORES COMUNES A EVITAR:\n• Responder con lo que tú sabes (usa solo el texto)\n• Elegir opciones con palabras del texto pero significado diferente\n• Elegir opciones con generalizaciones falsas ("siempre", "nunca", "todos")\n• Confundir idea secundaria con idea principal',
+     tp:'El ECOEMS da textos de 200-400 palabras con 3-5 preguntas.\nTienes ~3-4 minutos por texto.\n\nLee las preguntas PRIMERO. Así sabes qué información buscar cuando lees.',
+     ex:'Texto: "En México, el 70% de los adultos tiene sobrepeso. La mala alimentación y el sedentarismo son las principales causas."\n\nP: "¿Cuál es la causa de la obesidad?"\n✗ "La pobreza" → no lo dice el texto\n✗ "Todos los mexicanos están obesos" → dice 70%, no todos\n✓ "La mala alimentación y el sedentarismo" → explícito en el texto ✓'},
+  ]},
+],
+
+espanol:[
+  {t:'Morfología — Las partes de la oración',subs:[
+    {h:'Sustantivo, adjetivo y sus clases',
+     b:'SUSTANTIVO: nombre de personas, animales, cosas, lugares, ideas.\nClases:\n• Común/Propio: perro/Fido. ciudad/México\n• Concreto/Abstracto: mesa(concreto) / libertad(abstracto)\n• Individual/Colectivo: árbol/bosque. abeja/enjambre\n• Contable/No contable: libro(1,2,3) / agua(no se cuenta)\n\nGÉNERO: masculino/femenino\nNÚMERO: singular/plural\n\nADJETIVO: modifica al sustantivo. Concuerda en género y número.\nClases:\n• Calificativo: expresa cualidad (bonito, inteligente, rojo)\n• Demostrativo: señala (este, ese, aquel)\n• Posesivo: indica posesión (mi, tu, su, nuestro)\n• Indefinido: cantidad vaga (algún, ningún, varios)\n• Numeral: cardinal(tres), ordinal(tercero)',
+     tp:'Test del SUSTANTIVO: ¿puedes poner "el/la/los/las" antes? Sí → sustantivo.\nTest del ADJETIVO: modifica a un sustantivo y concuerda con él.\n\nOJO: "rápido" puede ser adjetivo (carro rápido) o adverbio (corrió rápido).',
+     ex:'"El valiente estudiante mexicano terminó su examen difícil."\nvaliente=adjetivo calificativo\nestudiante=sustantivo común\nmexicano=adjetivo calificativo (gentilicio)\nsu=adjetivo posesivo\ndifícil=adjetivo calificativo ✓\n\nSustantivo colectivo de árboles → bosque ✓\nSustantivo abstracto de libre → libertad ✓'},
+    {h:'Verbo — conjugación y formas',
+     b:'VERBO: expresa acción, estado o proceso. El elemento más importante de la oración.\n\nFORMAS NO PERSONALES (no se conjugan):\n• Infinitivo: caminar, comer, vivir (-ar,-er,-ir)\n• Gerundio: caminando, comiendo (-ando,-iendo)\n• Participio: caminado, comido (-ado,-ido). Irregulares: roto, dicho, hecho\n\nMODO:\n• Indicativo: realidad (camino, caminé, caminaré)\n• Subjuntivo: deseo/duda (que camine, quizás llegue)\n• Imperativo: orden (¡camina!, ¡corre!)\n\nTIEMPO INDICATIVO:\nPresente: yo camino\nPretérito indefinido (simple): yo caminé\nImperfecto: yo caminaba (acción pasada habitual)\nFuturo: yo caminaré\nCondicional: yo caminaría\nPretérito perfecto: yo he caminado\nPluscuamperfecto: yo había caminado\n\nVERBOS IRREGULARES importantes:\nSer/estar, ir, tener, poder, querer, decir, hacer, poner',
+     tp:'Para identificar el verbo: busca la palabra que cambia de tiempo.\n"El niño CORRE" → "corrió", "correrá" → es el verbo.\n\nGerundio siempre en -ando/-iendo.\nParticipio en -ado/-ido (pero hay irregulares: roto, dicho, hecho, visto, puesto).',
+     ex:'"Habiendo terminado el examen, Juan salió feliz."\nHabiendo terminado=gerundio compuesto\nsalió=verbo conjugado (pretérito indefinido) ✓\n\nIdentifica el tiempo:\n"había llegado" → pluscuamperfecto ✓\n"habrá terminado" → futuro perfecto ✓\n"hubiera podido" → pluscuamperfecto de subjuntivo ✓'},
+    {h:'Adverbio, pronombre, preposición y conjunción',
+     b:'ADVERBIO: modifica al verbo, adjetivo u otro adverbio. NO varía en género/número.\nClases: modo(bien,mal,rápidamente), tiempo(hoy,ayer,siempre), lugar(aquí,allí,lejos), cantidad(mucho,poco,muy), afirmación(sí,también), negación(no,nunca)\n\nPRONOMBRE: sustituye al sustantivo.\nPersonales: yo,tú,él,ella,nosotros,ustedes,ellos\nDemostrativos (cuando sustituyen): este,ese,aquel\nPosesivos (cuando sustituyen): mío,tuyo,suyo\nRelativos: que,quien,cual,cuyo\nInterrogativos/exclamativos: qué,quién,cuál,cuánto (con tilde)\n\nPREPOSICIÓN: relaciona palabras. No varía.\na,ante,bajo,con,de,desde,durante,en,entre,hacia,hasta,para,por,según,sin,sobre,tras\n\nCONJUNCIÓN: une palabras u oraciones.\nCoordinantes: y/e, o/u, pero, sino, mas\nSubordinantes: que, porque, aunque, cuando, si, como',
+     tp:'Adverbios en -MENTE son SIEMPRE adverbios.\n\nDiferencia:\n"mi libro" → mi=adjetivo posesivo\n"el libro es mío" → mío=pronombre posesivo\n\n"¿Qué haces?" → qué=interrogativo (con tilde)\n"El libro que leí" → que=relativo (sin tilde)',
+     ex:'"Ella llegó muy tarde aquí ayer."\nElla=pronombre personal\nmuy=adverbio de cantidad\ntarde=adverbio de tiempo\naquí=adverbio de lugar\nayer=adverbio de tiempo ✓\n\nPreposición vs adverbio:\n"Camina delante" → adverbio (no introduce complemento)\n"Camina delante de mí" → preposición (introduce complemento) ✓'},
+  ]},
+  {t:'Sintaxis — Análisis de la oración',subs:[
+    {h:'Sujeto y predicado — estructura básica',
+     b:'ORACIÓN: unidad mínima con sentido completo. Tiene sujeto y predicado.\n\nSUJETO: de quién o qué se habla.\nNúcleo: sustantivo o pronombre principal\nModificadores: artículos, adjetivos, complementos del nombre\n\nFórmula: ¿Quién/Qué + VERBO?\n\nPREDICADO: lo que se dice del sujeto. Contiene siempre el verbo.\nCOMPLEMENTOS DEL PREDICADO:\n• Complemento Directo (CD): recibe la acción. ¿Qué/A quién + verbo?\n  "Juan come PIZZA" → pizza=CD\n• Complemento Indirecto (CI): beneficiario. ¿A quién/Para quién?\n  "Doy el libro A MARÍA" → a María=CI\n• Complemento Circunstancial (CC): circunstancias (tiempo,lugar,modo)\n  "Estudia EN LA BIBLIOTECA" → CC de lugar\n• Atributo: con ser/estar. "El cielo ES azul" → azul=atributo\n\nCONCORDANCIA: el sujeto y el verbo concuerdan en persona y número.\n"Las niñas corren" ✓.  "Las niñas corre" ✗',
+     tp:'Truco para el sujeto:\n1° Localiza el VERBO\n2° Pregunta "¿Quién/qué + verbo?"\n3° Esa respuesta es el sujeto (con TODOS sus modificadores)\n\nEl sujeto puede estar al principio, al final o en el medio de la oración.',
+     ex:'"La maestra de matemáticas explicó el tema claramente."\nVerbo: explicó\n¿Quién explicó? → "La maestra de matemáticas" = SUJETO\nNúcleo: maestra\nPredicado: "explicó el tema claramente"\nCD: el tema. CC de modo: claramente ✓\n\n"El libro fue leído por los estudiantes."\nSujeto: El libro (voz pasiva) ✓'},
+    {h:'Oraciones simples y compuestas',
+     b:'ORACIÓN SIMPLE: un solo verbo conjugado.\n"El estudiante estudia." (1 verbo)\n\nORACIÓN COMPUESTA: dos o más verbos conjugados.\nCOORDINADAS (proposiciones independientes):\n• Copulativas: y,e,ni (suman). "Estudia Y trabaja"\n• Disyuntivas: o,u (alternativas). "¿Estudias O trabajas?"\n• Adversativas: pero,sino,mas,sin embargo (contraste). "Estudió PERO reprobó"\n• Causales coord.: pues (porque). "No vino, PUES está enfermo"\n\nSUBORDINADAS (una depende de la otra):\n• Sustantivas: "Quiero QUE estudies" (función de sustantivo)\n• Adjetivas/Relativas: "El libro QUE compré es bueno" (modifica sustantivo)\n• Adverbiales causales: "Llegué tarde PORQUE perdí el camión"\n• Concesivas: "AUNQUE llovió, salimos"\n• Temporales: "CUANDO llegues, llámame"\n• Condicionales: "SI estudias, pasarás"\n• Finales: "Estudia PARA QUE pases"',
+     tp:'Cuenta los verbos conjugados:\n1 verbo → SIMPLE\n2+ verbos → COMPUESTA\n\nBusca la conjunción que une las proposiciones:\n"pero/sin embargo" → adversativa\n"porque/ya que" → causal\n"aunque/a pesar de" → concesiva\n"cuando/mientras" → temporal',
+     ex:'"María estudia." → SIMPLE (1 verbo) ✓\n"María estudia porque quiere entrar al CCH." → SUBORDINADA CAUSAL ✓\n"Aunque estaba cansada, terminó." → SUBORDINADA CONCESIVA ✓\n"Estudia y trabaja." → COORDINADA COPULATIVA ✓\n"Estudió pero reprobó." → COORDINADA ADVERSATIVA ✓'},
+  ]},
+  {t:'Ortografía completa',subs:[
+    {h:'Acentuación — reglas completas',
+     b:'CLASIFICACIÓN POR ACENTO:\n\nAGUDAS (golpe en ÚLTIMA sílaba):\nLlevan tilde si terminan en: N, S o VOCAL\ncamión(N✓), café(vocal✓), además(S✓)\nreloj(j): sin tilde. papel(l): sin tilde.\n\nGRAVES o LLANAS (golpe en PENÚLTIMA):\nLlevan tilde si NO terminan en N, S o vocal.\nárbol(l✓), fácil(l✓), lápiz(z✓)\nlibro(o): sin tilde. examen(n): sin tilde. casas(s): sin tilde.\n\nESDRÚJULAS (golpe en ANTEPENÚLTIMA):\nSIEMPRE llevan tilde. Sin excepción.\nmúsica, rápido, teléfono, médico, árido\n\nSOBREESDRÚJULAS: SIEMPRE llevan tilde.\ndígamelo, cómpratelo, cuéntamelo\n\nHIATO ACENTUADO: vocal débil (i,u) tónica + vocal fuerte.\npaís, baúl, río, maíz, grúa\n\nTILDE DIACRÍTICA (distingue palabras iguales):\nel/él . tu/tú . se/sé . mas/más . si/sí . te/té . de/dé . mi/mí',
+     tp:'"Las AGUDAS quieren N, S o Vocal"\nEsdrújulas y sobreesdrújulas: SIEMPRE tilde. Sin excepción.\n\nTruco para contar sílabas: di la palabra en voz alta y cuenta los golpes.\ncamión: ca-MIÓN = 2 sílabas. Último golpe → AGUDA. Termina en N → TILDE.',
+     ex:'ca-MIÓN → aguda, N → TILDE ✓\nÁR-bol → grave, l → TILDE ✓\nMÚ-si-ca → esdrújula → TILDE ✓\nca-SA → grave, a → sin tilde ✓\nex-A-men → grave, n → sin tilde ✓ (NO lleva tilde)\nPa-ÍS → hiato acentuado → TILDE ✓\n"Él dijo que el libro es suyo" → Él=pronombre(tilde), el=artículo(sin tilde) ✓'},
+    {h:'B/V, G/J, H, C/S/Z y puntuación',
+     b:'USO DE B:\n• Verbos en -bir: recibir, escribir, subir, percibir\n• Imperfecto -aba: cantaba, saltaba, jugaba\n• Después de m: también, cambio, combinar\n• Prefijos bi-, bis-, biz-: bisabuela, bilingüe\n\nUSO DE V:\n• Después de n: enviar, convencer, invitar, invierno\n• Adjetivos en -ivo/-iva: activo, pasivo, nativo\n• Verbos andar, estar, tener en pasado: anduve, estuve, tuve\n• Prefijo vice-, villa-: vicepresidente, villano\n\nUSO DE G vs J:\nG suave ante e,i: gel, girar, gente, gitano\nG fuerte (A,O,U o con u muda): gato, goma, guerra, guitarra\nJ ante e,i en muchas palabras: jefe, jinete, jeringa, viaje, equipaje, jirafa\n\nUSO DE H:\n• Formas del verbo haber: he,has,ha,hemos,han,había,haya,hubiera\n• Palabras con hue-,hie-: huevo,hueso,hierba,hierro,hielo\n• Origen: hermano,hombre,historia,hospital,hablar\n\nUSO DE C/S/Z:\nC ante E,I: cero,ciudad,cereal\nZ ante A,O,U: zapato,zona,azul\nNUNCA en español: ze,zi → siempre ce,ci\n\nPUNTUACIÓN:\nPunto(.): final de oración. Coma(,): lista, vocativo, oraciones coordinadas. Punto y coma(;): oraciones largas relacionadas. Dos puntos(:): enumeración, cita.',
+     tp:'La Z NUNCA antes de E o I → siempre CE y CI.\nEl verbo haber SIEMPRE con H: había, hubiera, haya (nunca "avía", "ubiera", "haiga").\n"Haiga" NO EXISTE en español correcto.',
+     ex:'Correcto: zapato(Za✓), cero(Ce✓), ciudad(Ci✓)\nIncorrecto: ze/zi ❌\n\n"avía llegado" ❌ → "había llegado" ✓\n"haiga podido" ❌ → "haya podido" ✓\n\nImperfecto: cantaba(B✓). Activo(V✓). Invitar(V,después de n✓)'},
+  ]},
+],
+
+bio:[
+  {t:'La célula — unidad de la vida',subs:[
+    {h:'Estructura y organelos celulares',
+     b:'MEMBRANA PLASMÁTICA:\nPresente en TODAS las células. Doble capa de fosfolípidos con proteínas.\nFunción: permeabilidad selectiva (controla qué entra y sale).\n\nNÚCLEO (solo eucariotas):\nContiene ADN. Rodeado por membrana nuclear con poros.\nNucléolo: produce ARN ribosomal.\n\nMITOCONDRIA:\nProduce energía (ATP). Tiene su propio ADN.\nDoble membrana: externa (lisa) e interna (crestas).\n\nRIBOSOMA:\nSíntesis de proteínas. En TODAS las células.\nPuede estar libre o unido al retículo endoplásmico rugoso.\n\nRETÍCULO ENDOPLÁSMICO (RE):\nRE rugoso (con ribosomas): síntesis y transporte de proteínas.\nRE liso (sin ribosomas): síntesis de lípidos.\n\nAPARATO DE GOLGI:\nEmpaca, modifica y distribuye proteínas y lípidos.\n"La central de envíos" de la célula.\n\nCLOROPLASTO (solo plantas y algas):\nRealiza fotosíntesis. Contiene clorofila.\n\nPARED CELULAR (plantas, hongos, bacterias):\nDa rigidez. En plantas: de celulosa. En hongos: quitina.\n\nVACUOLA:\nAnimales: pequeñas, múltiples.\nPlantas: una grande (ocupa 90%). Mantiene turgencia.',
+     tp:'Diferencias ANIMAL vs VEGETAL:\nVEGETAL tiene: Pared celular + Cloroplasto + Vacuola grande\nANIMAL NO tiene ninguna de esas, pero tiene centríolos.\n\nRegla PECMIT para célula vegetal:\nP=Pared, E=Enorme vacuola, C=Cloroplasto, M=Membrana, I=Info(núcleo), T=Trabajo(mito)',
+     ex:'¿Produce ATP? → MITOCONDRIA ✓\n¿Fotosíntesis? → CLOROPLASTO ✓\n¿Síntesis de proteínas? → RIBOSOMA ✓\n¿Solo en plantas? → Pared celular, cloroplasto, vacuola grande ✓\n¿Empaca y distribuye? → Aparato de Golgi ✓'},
+    {h:'Procariota vs Eucariota y niveles de organización',
+     b:'CÉLULA PROCARIOTA:\nSIN núcleo definido (ADN libre en citoplasma).\nMás pequeña y simple. Solo ribosomas.\nEjemplos: bacterias y arqueas.\n\nCÉLULA EUCARIOTA:\nCON núcleo definido (rodeado por membrana nuclear).\nMás grande y compleja. Con todos los organelos membranosos.\nEjemplos: animales, plantas, hongos, protistas.\n\nNIVELES DE ORGANIZACIÓN:\n1°Célula→2°Tejido→3°Órgano→4°Sistema→5°Organismo\n→6°Población→7°Comunidad→8°Ecosistema→9°Biosfera',
+     tp:'PRO=antes/primitivo: procariota=sin núcleo "formado"\nEU=verdadero: eucariota=con núcleo verdadero (con membrana)\n\nBacterias=procariotas. Animales, plantas, hongos=eucariotas.',
+     ex:'¿Las bacterias son procariotas o eucariotas?\n→ PROCARIOTAS (sin membrana nuclear) ✓\n\n¿Nivel entre tejido y sistema?\n→ ÓRGANO (célula→tejido→órgano→sistema→organismo) ✓'},
+  ]},
+  {t:'Genética y herencia',subs:[
+    {h:'ADN, ARN y síntesis de proteínas',
+     b:'ADN (Ácido Desoxirribonucleico):\nDoble hélice. Nucleótidos con desoxirribosa+fosfato+base.\nBASES: A-T (Adenina-Timina, 2 puentes H) y G-C (Guanina-Citosina, 3 puentes H)\nFunción: almacenar información genética.\n\nARN (Ácido Ribonucleico):\nSimple hebra. Azúcar=ribosa. Uracilo (U) en lugar de Timina.\nARNm: lleva mensaje del ADN al ribosoma\nARNt: transporta aminoácidos\nARNr: forma los ribosomas\n\nFLUJO DE INFORMACIÓN (Dogma Central):\nADN → ARN → Proteína\n\nTRANSCRIPCIÓN (ADN→ARNm, en el núcleo):\nA→U, T→A, G→C, C→G\n\nTRADUCCIÓN (ARNm→Proteína, en ribosomas):\nCodón: 3 bases = 1 aminoácido',
+     tp:'ADN: A-T y G-C\nARN: A-U y G-C (Uracilo sustituye a Timina)\n\nSi el ADN es: A-T-C-G\nEl ARNm será: U-A-G-C',
+     ex:'Complementaria de ADN ATCGGT:\nARNm: UAGCCA ✓\n\nSi ADN tiene 30% de Adenina:\nTimina=30% (A-T siempre iguales)\nGuanina=Citosina=(100-60)/2=20% ✓'},
+    {h:'División celular — Mitosis y Meiosis',
+     b:'MITOSIS: división para CRECIMIENTO y REPARACIÓN.\nResultado: 2 células IDÉNTICAS a la madre (2n=46).\nFases: Profase→Metafase→Anafase→Telofase\n\nMEIOSIS: división para producir GAMETOS.\nResultado: 4 células con MITAD de cromosomas (n=23).\nOcurre en ovarios y testículos.\nDos divisiones: Meiosis I y Meiosis II.\n\nCROMOSOMAS HUMANOS:\nCélulas somáticas: 46 (23 pares) → diploides (2n)\nGametos: 23 → haploides (n)\n\nFECUNDACIÓN: óvulo(n=23) + espermatozoide(n=23) = cigoto(2n=46)',
+     tp:'MI-tosis=MIsmo número (46→46)\nME-iosis=MEnos cromosomas (46→23)\n\nLas primeras dos letras lo dicen todo:\nMI=Mismo. ME=Menos.',
+     ex:'Célula 46 cromosomas hace mitosis:\n→ 2 células con 46 ✓\n\nCélula 46 cromosomas hace meiosis:\n→ 4 células con 23 ✓\n\n¿Por qué gametos tienen 23?\nPara que óvulo(23)+espermatozoide(23)=cigoto(46) ✓'},
+    {h:'Herencia mendeliana',
+     b:'CONCEPTOS:\nGEN: segmento de ADN que determina una característica\nALELO: variante de un gen\nDOMINANTE (D): se expresa con una copia\nRECESIVO (d): solo se expresa con dos copias (dd)\nHOMOCIGOTO: DD o dd. HETEROCIGOTO: Dd\nGENOTIPO: composición genética (DD,Dd,dd)\nFENOTIPO: característica observable\n\nLEYES DE MENDEL:\n1ª: en F1 todos los hijos son iguales (Uniformidad)\n2ª: los alelos se separan al formar gametos (Segregación)\n3ª: los genes de diferentes pares se combinan independientemente\n\nCUADRO DE PUNNETT (Dd×Dd):\nResultados: 25%DD + 50%Dd + 25%dd\nFenotipos: 75% dominante + 25% recesivo (proporción 3:1)',
+     tp:'Mayúscula=DOMINANTE. Minúscula=recesivo.\nCon UN alelo dominante=fenotipo dominante.\nNecesitas DOS alelos recesivos=fenotipo recesivo.\n\nProporción Mendel: 3:1 (fenotípica) y 1:2:1 (genotípica) en Dd×Dd',
+     ex:'Dd×Dd:\n25%DD(dominante)+50%Dd(dominante)+25%dd(recesivo)\nFenotipo: 75% dominante: 25% recesivo ✓\n\nSi ambos padres tienen fenotipo dominante pero un hijo tiene fenotipo recesivo:\n→ Ambos padres son Dd (heterocigotos) ✓'},
+  ]},
+  {t:'Metabolismo celular',subs:[
+    {h:'Fotosíntesis y respiración celular',
+     b:'FOTOSÍNTESIS:\nEcuación: 6CO₂+6H₂O+Luz → C₆H₁₂O₆+6O₂\nLugar: CLOROPLASTOS\nPigmento: CLOROFILA (absorbe rojo y azul, refleja verde)\n\nFases:\n1° Luminosa (en tilacoides): usa luz→produce ATP,NADPH,libera O₂\n2° Ciclo de Calvin (en estroma): usa ATP,NADPH→fija CO₂→produce glucosa\n\nRESPIRACIÓN CELULAR AEROBIA:\nEcuación: C₆H₁₂O₆+6O₂ → 6CO₂+6H₂O+38ATP\nLugar: MITOCONDRIAS\n\nFases:\n1° Glucólisis (citoplasma): glucosa→2 piruvato+2ATP\n2° Ciclo de Krebs (matriz mito): produce CO₂,NADH\n3° Cadena de transporte (crestas): produce ~34ATP\n\nFERMENTACIÓN (sin O₂):\nLáctica: glucosa→ácido láctico+2ATP (músculos durante ejercicio)\nAlcohólica: glucosa→etanol+CO₂+2ATP (levaduras, cerveza, pan)',
+     tp:'PROCESOS INVERSOS:\nFotosíntesis: consume CO₂ y H₂O → produce glucosa y O₂\nRespiración: consume glucosa y O₂ → produce CO₂ y H₂O\n\nFotosíntesis ocurre en CLOROPLASTOS.\nRespiración ocurre en MITOCONDRIAS.',
+     ex:'¿Por qué los bosques son "pulmones del planeta"?\n→ Fotosíntesis absorbe CO₂ y libera O₂ ✓\n\n¿Por qué los músculos duelen después de ejercicio intenso?\n→ Fermentación láctica produce ácido láctico ✓\n\n¿Por qué el pan sube?\n→ Levaduras fermentan y producen CO₂ que infla la masa ✓'},
+  ]},
+  {t:'Evolución y ecología',subs:[
+    {h:'Teoría de la evolución y selección natural',
+     b:'TEORÍA DE LA EVOLUCIÓN (Darwin y Wallace):\nLas especies cambian gradualmente a través de la selección natural.\n\nPILARES:\n1° Variación: individuos de una especie son diferentes\n2° Herencia: características se transmiten a la descendencia\n3° Lucha por la existencia: recursos limitados, hay competencia\n4° Supervivencia del más APTO (no el más fuerte): el mejor adaptado a su ambiente específico\n5° Cambio gradual: con el tiempo, la población cambia\n\nIMPORTANTE: la adaptación NO es una decisión del animal. Es un proceso gradual de miles de generaciones.\n\nEVIDENCIAS:\n• Registro fósil: muestra cambios a través del tiempo\n• Anatomía comparada: estructuras homólogas (mismo origen, diferente función)\n• Embriología comparada: embriones similares en etapas tempranas\n• Bioquímica y genética: ADN similar entre especies emparentadas\n\nESPECIACIÓN: aislamiento geográfico→diferenciación→nueva especie',
+     tp:'Trampa del ECOEMS: "Los organismos SE ADAPTAN porque quieren sobrevivir" → FALSO.\nLos individuos NO cambian. La POBLACIÓN cambia con el tiempo.\n\n"Los más fuertes sobreviven" → impreciso. Lo correcto: los MÁS ADAPTADOS a ese ambiente específico.',
+     ex:'Jirafas con cuello largo:\n✗ "Estiraron el cuello" → FALSO (no es decisión)\n✓ "Las que ya tenían cuello más largo alcanzaban más comida, sobrevivían más, dejaban más descendencia con cuello largo. Después de miles de generaciones: cuello largo predomina." ✓\n\nResistencia a antibióticos:\n✓ Bacterias con mutación de resistencia sobreviven → se reproducen → la población se vuelve resistente ✓'},
+    {h:'Ecología — Ecosistemas y relaciones interespecíficas',
+     b:'ECOSISTEMA: comunidad de seres vivos + factores abióticos (agua,suelo,temperatura,luz).\n\nNIVELES TRÓFICOS:\nProductores (autótrofos): plantas, algas → fotosíntesis\nConsumidores primarios (herbívoros): comen plantas\nConsumidores secundarios (carnívoros): comen herbívoros\nConsumidores terciarios: comen carnívoros\nDescomponedores: bacterias y hongos → desintegran materia orgánica\n\nPIRÁMIDES ECOLÓGICAS:\nCada nivel pierde ~90% de energía (como calor).\nPor eso hay muchos productores y pocos carnívoros al tope.\n\nRELACIONES INTERESPECÍFICAS:\n• Mutualismo (+/+): ambos se benefician. Abejas y flores, líquenes.\n• Comensalismo (+/0): uno se beneficia, el otro no se afecta. Rémora y tiburón.\n• Parasitismo (+/−): uno se beneficia, el otro se perjudica. Pulgas y perro.\n• Competencia (−/−): ambos se perjudican por recursos limitados.\n• Depredación (+/−): predador mata a la presa.\n\nBIODIVERSIDAD: variedad de especies en un ecosistema.\nMayor biodiversidad = ecosistema más estable y resistente.',
+     tp:'Pirámide siempre: muchos productores ABAJO → pocos carnívoros ARRIBA.\n90% de energía se pierde en cada nivel.\nPor eso necesitamos muchas plantas para sostener pocos grandes carnívoros.',
+     ex:'Cadena: Pasto→Conejo→Zorro→Águila→Bacterias\n\n¿Qué pasa si desaparecen los conejos?\n→ Zorros disminuyen. Pasto aumenta. Águilas disminuyen. ✓\n\nAbejas y flores: ¿qué tipo de relación?\n→ MUTUALISMO: abeja obtiene néctar(+), flor es polinizada(+) ✓\n\nPulgas y perro:\n→ PARASITISMO: pulga se beneficia(+), perro se perjudica(−) ✓'},
+  ]},
+],
+
+quimica:[
+  {t:'Estructura de la materia',subs:[
+    {h:'El átomo — partículas y modelos',
+     b:'PARTÍCULAS SUBATÓMICAS:\nPROTÓN (+1): en el núcleo. Número de protones=NÚMERO ATÓMICO (Z). Define el elemento.\nNEUTRÓN (0): en el núcleo. Neutrones=A−Z\nELECTRÓN (−1): en orbitales. En átomo neutro: electrones=protones.\n\nIÓN: átomo que ganó o perdió electrones.\nCATIÓN: perdió electrones → carga positiva. Na→Na⁺\nANIÓN: ganó electrones → carga negativa. Cl→Cl⁻\n\nNÚMERO ATÓMICO (Z): protones (define el elemento)\nNÚMERO DE MASA (A): protones+neutrones\nISÓTOPOS: mismo Z, diferente número de neutrones. C-12, C-13, C-14\n\nMODELOS ATÓMICOS:\nDemócrito→Dalton→Thomson("budín de pasas")→Rutherford(núcleo pequeño)→Bohr(órbitas)→Mecanocuántico(orbitales)',
+     tp:'PROTÓN=Personalidad del elemento (define qué es)\nNEUTRÓN=masa adicional (no cambia el elemento)\nELECTRÓN=Energía y reacciones\n\nPara neutrones: N=A−Z',
+     ex:'Na (Z=11, A=23):\nProtones=11. Neutrones=12. Electrones=11 ✓\n\nIsótopos C-12 y C-14:\nAmbos Z=6 (carbono). Neutrones: 6 y 8 respectivamente ✓\n\nNa pierde 1 electrón: Na(11p,11e) → Na⁺(11p,10e) ✓'},
+    {h:'Tabla periódica — organización y propiedades',
+     b:'ORGANIZACIÓN:\nPERÍODOS (filas): 7. Indican el número de capas electrónicas.\nGRUPOS (columnas): 18. Misma familia=propiedades similares.\n\nGRUPOS IMPORTANTES:\nGrupo 1 (metales alcalinos): Li,Na,K,Rb,Cs — muy reactivos, se oxidan\nGrupo 2 (alcalinotérreos): Be,Mg,Ca,Sr,Ba — menos reactivos\nGrupos 3-12 (metales transición): Fe,Cu,Zn,Au,Ag — conductores\nGrupo 17 (halógenos): F,Cl,Br,I — muy reactivos, forman sales\nGrupo 18 (gases nobles): He,Ne,Ar,Kr,Xe — casi no reaccionan (capa completa)\n\nTENDENCIAS:\nRadio atómico: aumenta hacia abajo y hacia la izquierda\nElectronegatividad: aumenta hacia arriba y hacia la derecha (F=máxima)\nEnergía de ionización: aumenta hacia arriba y hacia la derecha\nCarácter metálico: aumenta hacia abajo y hacia la izquierda\n\nSÍMBOLOS ESPECIALES:\nFe=hierro(Ferrum). Au=oro(Aurum). Ag=plata(Argentum). Na=sodio(Natrium). K=potasio(Kalium). Pb=plomo(Plumbum)',
+     tp:'Metales: izquierda y centro. No metales: derecha. Metaloides: diagonal.\n\nF es el más electronegativo de todos los elementos.\nGases nobles casi no reaccionan porque tienen 8 electrones en su última capa (octeto completo).',
+     ex:'Na (Z=11): Período 3, Grupo 1 ✓\n\n¿Por qué gases nobles no reaccionan?\n→ Tienen capa exterior completa (8e), máxima estabilidad ✓\n\nOrdena electronegatividad: Na, Cl, F\n→ F>Cl>Na (F es el más electronegativo) ✓'},
+  ]},
+  {t:'Enlace químico y compuestos',subs:[
+    {h:'Tipos de enlace químico',
+     b:'ENLACE IÓNICO:\nMETAL + NO METAL\nEl metal CEDE electrones → catión(+)\nEl no metal GANA electrones → anión(−)\nAtracción electrostática entre catión y anión.\nSólidos duros. Punto de fusión alto. Solubles en agua.\nConduce electricidad cuando está disuelto.\nEjemplos: NaCl, MgO, CaCl₂, KBr\n\nENLACE COVALENTE:\nNO METAL + NO METAL\nÁtomos COMPARTEN electrones.\nSimple(1 par), Doble(2 pares), Triple(3 pares)\nCOVALENTE POLAR: diferente electronegatividad→cargas parciales δ+/δ−. H₂O, HCl\nCOVALENTE APOLAR: misma electronegatividad→sin carga parcial. H₂, O₂, N₂, CH₄\n\nENLACE METÁLICO:\nMETAL + METAL\n"Mar de electrones": electrones libres que circulan.\nExplica: conductividad eléctrica, calórica, ductilidad, maleabilidad.\nEjemplos: Fe, Cu, Al, Au, Ag\n\nFUERZAS INTERMOLECULARES:\nPuentes de hidrógeno: N-H, O-H, F-H (más fuertes)\nFuerzas dipolo-dipolo: entre moléculas polares\nVan der Waals: entre moléculas no polares (más débiles)',
+     tp:'Regla rápida:\nMetal+No metal → IÓNICO\nNo metal+No metal → COVALENTE\nMetal+Metal → METÁLICO\n\nEl agua tiene enlace COVALENTE POLAR dentro de la molécula y PUENTES DE HIDRÓGENO entre moléculas.',
+     ex:'NaCl: Na(metal)+Cl(no metal) → IÓNICO ✓\nH₂O: H y O (no metales) → COVALENTE POLAR ✓\nH₂: H y H → COVALENTE APOLAR ✓\nFe: METÁLICO ✓\n\n¿Por qué el cobre conduce electricidad?\n→ Enlace metálico: electrones libres se mueven fácilmente ✓'},
+  ]},
+  {t:'Reacciones y soluciones',subs:[
+    {h:'Tipos de reacciones químicas y balanceo',
+     b:'1° SÍNTESIS: A+B→AB (dos se unen en uno)\nEj: 2H₂+O₂→2H₂O\n\n2° DESCOMPOSICIÓN: AB→A+B (uno se divide)\nEj: 2H₂O→2H₂+O₂\n\n3° COMBUSTIÓN: hidrocarburo+O₂→CO₂+H₂O+calor\nSIEMPRE tiene O₂ de reactivo y CO₂+H₂O de productos.\nEj: CH₄+2O₂→CO₂+2H₂O\n\n4° SUSTITUCIÓN SIMPLE: A+BC→AC+B\nEj: Zn+2HCl→ZnCl₂+H₂\n\n5° DOBLE DESPLAZAMIENTO: AB+CD→AD+CB\nEj: AgNO₃+NaCl→AgCl+NaNO₃\n\nLEY DE LAVOISIER: masa reactivos=masa productos\nÁtomos no se crean ni destruyen, solo se reorganizan.\n\nBALANCEO: añade coeficientes para igualar átomos en ambos lados.\nNUNCA cambies las fórmulas, solo los coeficientes.',
+     tp:'Para reconocer COMBUSTIÓN: busca O₂ de reactivo y CO₂+H₂O de productos.\n\nPara balancear: empieza por el elemento más complejo, deja H y O para el final.',
+     ex:'Identifica:\nFe+S→FeS → SÍNTESIS ✓\nCaCO₃→CaO+CO₂ → DESCOMPOSICIÓN ✓\nC₂H₆+O₂→CO₂+H₂O → COMBUSTIÓN ✓\n\nBalancea: Al+O₂→Al₂O₃\n4Al+3O₂→2Al₂O₃\n(Al: 4=4 ✓. O: 6=6 ✓) ✓'},
+    {h:'pH y soluciones',
+     b:'ÁCIDOS: liberan H⁺ en agua. Sabor agrio.\nEjemplos: HCl, H₂SO₄, HNO₃, CH₃COOH(vinagre)\n\nBASES: liberan OH⁻ en agua. Sabor amargo, jabonosas.\nEjemplos: NaOH(sosa), Ca(OH)₂(cal), NH₃(amoníaco)\n\nESCALA DE pH (0-14):\n0-6: ÁCIDO (más H⁺ que OH⁻)\n7: NEUTRO (H⁺=OH⁻)\n8-14: BÁSICO (más OH⁻ que H⁺)\n\nVALORES COMUNES:\nEstómago: pH 1-2. Limón: pH 2. Vinagre: pH 3. Café: pH 5.\nLeche: pH 6.5. Agua: pH 7. Sangre: pH 7.35-7.45.\nJabón: pH 9-10. Lejía: pH 12-13.\n\nNEUTRALIZACIÓN: Ácido+Base→Sal+Agua\nHCl+NaOH→NaCl+H₂O\n\nESTADOS DE LA MATERIA:\nSólido→Líquido: fusión. Líquido→Gas: evaporación/ebullición.\nGas→Líquido: condensación. Líquido→Sólido: solidificación.',
+     tp:'Truco para recordar pH:\nLimón(ácido)=pH 2. Agua=pH 7. Jabón(básico)=pH 9. Lejía=pH 12.\n\nCambio FÍSICO: no cambia la composición (disolver sal en agua).\nCambio QUÍMICO: nueva sustancia (quemar papel, cocinar un huevo).',
+     ex:'pH 3 → FUERTEMENTE ÁCIDO ✓\npH 9 → BÁSICO ✓\npH 7 → NEUTRO ✓\n\nH₂SO₄+2NaOH→Na₂SO₄+2H₂O (neutralización) ✓\n\n¿Cambio físico o químico al disolver sal en agua?\n→ FÍSICO: puedes recuperar la sal evaporando el agua ✓'},
+  ]},
+],
+};
+
+// Aplicar el temario completo a los sujetos existentes
+Object.keys(TL).forEach(function(k){
+  if(SB[k]){
+    SB[k].lessons = TL[k];
+  }
+});
+
+console.log('Temario completo aplicado correctamente.');
+})();
+
+
 
 // ── DASHBOARD ────────────────────────────────────────────────────
 function rDash(){
@@ -537,7 +895,7 @@ function rDash(){
     <div style="background:var(--pl);border:1px solid #AFA9EC;border-radius:var(--r);padding:16px;margin-bottom:12px">
       <div style="font-size:11px;font-weight:600;color:var(--p);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em">Meta ECOEMS</div>
       <div style="font-size:18px;font-weight:700;color:var(--pd);margin-bottom:4px">100 de 128 aciertos para el CCH/IPN</div>
-      <div style="font-size:13px;color:var(--p);margin-bottom:12px">Puedes equivocarte en 28 y aun así entrar. 🤖 IA y 🔊 Voz activadas en todos los temas.</div>
+      <div style="font-size:13px;color:var(--p);margin-bottom:12px">Banco de 174 preguntas. El simulacro completo toma las 128 del examen real. 🤖 IA y 🔊 Voz en cada tema.</div>
       <div style="display:flex;gap:20px;margin-bottom:12px">
         ${[{n:h.length,l:'exámenes'},{n:avg+'%',l:'promedio'},{n:ec+'/128',l:'estimado'}].map(s=>`<div><div style="font-size:20px;font-weight:700;color:var(--pd)">${s.n}</div><div style="font-size:11px;color:var(--p)">${s.l}</div></div>`).join('')}
       </div>
@@ -546,7 +904,7 @@ function rDash(){
     </div>
     <p style="font-size:12px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Accesos rápidos</p>
     <div class="g4" style="margin-bottom:14px">
-      <button class="btn-p" onclick="startX('full')" style="border-radius:var(--r);padding:14px;text-align:left;line-height:1.5">🎯<br><strong>Simulacro completo</strong><br><span style="font-size:11px;opacity:.85">~40 preguntas · 3 horas</span></button>
+      <button class="btn-p" onclick="startX('full')" style="border-radius:var(--r);padding:14px;text-align:left;line-height:1.5">🎯<br><strong>Simulacro completo</strong><br><span style="font-size:11px;opacity:.85">128 preguntas · 3 horas</span></button>
       <button onclick="startX('mate')" style="background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left;line-height:1.5;font-size:14px;font-family:inherit">🔢<br><strong>Matemáticas</strong><br><span style="font-size:11px;color:var(--tx2)">20 preguntas · 40 min</span></button>
       <button onclick="gt('study')" style="background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left;line-height:1.5;font-size:14px;font-family:inherit">🤖<br><strong>Estudiar con IA</strong><br><span style="font-size:11px;color:var(--tx2)">Explicaciones + voz</span></button>
       <button onclick="gt('tips')" style="background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left;line-height:1.5;font-size:14px;font-family:inherit">🧠<br><strong>Técnicas</strong><br><span style="font-size:11px;color:var(--tx2)">Memoria · Anti-nervios</span></button>
@@ -631,6 +989,8 @@ function rEM(){
     {t:'civica',i:'⚖️',n:'Formación Cívica y Ética',s:'6 preguntas · 12 min · IA + voz'},
     {t:'hverbal',i:'🗣️',n:'Habilidad Verbal',s:'10 preguntas · Sinónimos, analogías, compleción · 20 min'},
     {t:'hmat',i:'🔷',n:'Habilidad Matemática',s:'10 preguntas · Sucesiones, razonamiento · 20 min'},
+    {t:'anatomia',i:'🫀',n:'Anatomía y Salud',s:'10 preguntas · Sistemas del cuerpo, salud · 20 min'},
+    {t:'lectura2',i:'📚',n:'Textos de Comprensión Lectora',s:'8 preguntas · Textos reales con preguntas · 20 min'},
   ];
   document.getElementById('s-em').innerHTML=`<p style="font-size:12px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Selecciona tu examen</p>
   <p style="font-size:13px;color:var(--tx2);margin-bottom:14px">Después de cada respuesta, Claude explicará por qué es correcta. Puedes escucharla con 🔊.</p>`+
@@ -643,15 +1003,15 @@ function rEM(){
 // ── EXAM ENGINE ──────────────────────────────────────────────────
 let EX={},xT=null;
 function bQs(type){
-  if(type==='full'){let a=[];Object.entries(SB).forEach(([k,s])=>{if(s.q)a=a.concat(s.q.map(q=>({...q,sj:k})));});return sh(a).slice(0,40);}
+  if(type==='full'){let a=[];Object.entries(SB).forEach(([k,s])=>{if(s.q)a=a.concat(s.q.map(q=>({...q,sj:k})));});return sh(a).slice(0,128);}
   return sh((SB[type]?.q||[]).map(q=>({...q,sj:type})));
 }
 function startX(type){
   stopX();stopVoice();
   const qs=bQs(type);
-  const sec={full:180*60,mate:40*60,lectura:20*60,espanol:25*60}[type]||20*60;
+  const sec={full:180*60,mate:40*60,lectura:25*60,espanol:25*60,hverbal:25*60,hmat:25*60,anatomia:20*60,lectura2:20*60}[type]||20*60;
   EX={type,qs,cur:0,ans:new Array(qs.length).fill(null),tl:sec,tot:sec};
-  const lbl={full:'ECOEMS Completo',mate:'Matemáticas',lectura:'Comprensión Lectora',espanol:'Español',bio:'Biología',quimica:'Química',historia:'Historia',geo:'Geografía',fisica:'Física',civica:'Formación Cívica',hverbal:'Habilidad Verbal',hmat:'Habilidad Matemática'};
+  const lbl={full:'ECOEMS Completo',mate:'Matemáticas',lectura:'Comprensión Lectora',espanol:'Español',bio:'Biología',quimica:'Química',historia:'Historia',geo:'Geografía',fisica:'Física',civica:'Formación Cívica',hverbal:'Habilidad Verbal',hmat:'Habilidad Matemática',anatomia:'Anatomía y Salud',lectura2:'Lectura — Textos'};
   document.getElementById('xbadge').textContent=lbl[type]||type;
   TABS.forEach(t=>document.getElementById('s-'+t).classList.remove('on'));
   document.getElementById('s-res').classList.remove('on');
@@ -832,6 +1192,73 @@ function tB(){
 function uBUI(){const ph=BP[bPh];const p=document.getElementById('bph');const ball=document.getElementById('bball');const l=document.getElementById('blbl');const c=document.getElementById('bcnt');if(p)p.textContent=ph.n;if(ball)ball.style.transform=`scale(${ph.s})`;if(l)l.textContent=ph.n;if(c)c.textContent=bC;}
 function tP(){if(pR){clearInterval(pT);pR=false;const b=document.getElementById('pb');if(b)b.textContent='▶ Continuar';return;}pR=true;const b=document.getElementById('pb');if(b)b.textContent='⏸ Pausar';pT=setInterval(()=>{pS--;if(pS<0){pBr=!pBr;pS=pBr?5*60:25*60;if(!pBr)pSn++;}const t=document.getElementById('pt');const m=document.getElementById('pm');if(t)t.textContent=ft(pS);if(m)m.textContent=pBr?'🌿 Descansa '+Math.ceil(pS/60)+' minutos':`📚 Sesión ${pSn}`;},1000);}
 function rP(){clearInterval(pT);pR=false;pS=25*60;pBr=false;pSn=1;const t=document.getElementById('pt');const m=document.getElementById('pm');const b=document.getElementById('pb');if(t)t.textContent='25:00';if(m)m.textContent='📚 Sesión 1';if(b)b.textContent='▶ Iniciar';}
+
+
+const DIAG=[
+  {id:1,mat:'Habilidad Verbal',sub:'Sinónimos',ic:'🗣️',q:'¿Cuál es el SINÓNIMO de "efímero"?',o:['Eterno','Pasajero','Importante','Sólido'],a:1,e:'Efímero=de muy corta duración. Sinónimo: PASAJERO (fugaz, transitorio).'},
+  {id:2,mat:'Habilidad Verbal',sub:'Analogías',ic:'🗣️',q:'MÉDICO : HOSPITAL = MAESTRO : ?',o:['Libro','Escuela','Alumno','Conocimiento'],a:1,e:'Relación profesión-lugar de trabajo. El maestro trabaja en la ESCUELA.'},
+  {id:3,mat:'Habilidad Verbal',sub:'Compleción',ic:'🗣️',q:'"Aunque entrenó meses, el resultado fue ___ de lo esperado."',o:['mejor','peor','igual','distinto'],a:0,e:'"Aunque" introduce contraste. Entrenó mucho, resultado fue MEJOR.'},
+  {id:4,mat:'Habilidad Matemática',sub:'Sucesiones',ic:'🔷',q:'¿Cuál es el siguiente? 3, 6, 12, 24, ?',o:['36','42','48','54'],a:2,e:'Razón x2: 3-6-12-24-48.'},
+  {id:5,mat:'Habilidad Matemática',sub:'Razonamiento',ic:'🔷',q:'6 personas terminan un trabajo en 4 días. ¿Cuántos días tardan 8?',o:['2 días','3 días','5 días','6 días'],a:1,e:'Inversamente proporcional: 6x4=8xX → X=3 días.'},
+  {id:6,mat:'Habilidad Matemática',sub:'Series',ic:'🔷',q:'Serie: 1, 4, 9, 16, 25, ?',o:['30','36','32','49'],a:1,e:'Cuadrados perfectos: 1²,2²,3²,4²,5²,6²=36.'},
+  {id:7,mat:'Comprensión Lectora',sub:'Idea principal',ic:'📖',ctx:'La obesidad en México ha alcanzado niveles alarmantes. Más del 70% de los adultos tiene sobrepeso. Esta condición aumenta el riesgo de diabetes tipo 2, hipertensión y enfermedades cardiovasculares. Los especialistas señalan que la dieta alta en azúcares y el sedentarismo son los principales factores.',q:'¿Cuál es la idea principal del texto?',o:['El gobierno pone etiquetas','La obesidad es un grave problema de salud pública en México','Los mexicanos no hacen ejercicio','La diabetes es muy común'],a:1,e:'La idea principal engloba TODO el texto: la obesidad como problema de salud pública.'},
+  {id:8,mat:'Comprensión Lectora',sub:'Inferencias',ic:'📖',ctx:'La obesidad en México ha alcanzado niveles alarmantes. Más del 70% de los adultos tiene sobrepeso. Esta condición aumenta el riesgo de diabetes tipo 2, hipertensión y enfermedades cardiovasculares. Los especialistas señalan que la dieta alta en azúcares y el sedentarismo son los principales factores.',q:'Del texto se INFIERE que:',o:['Todos los mexicanos son obesos','Cambiar la dieta podría reducir el problema','El etiquetado es la única solución','La diabetes no se relaciona con la alimentación'],a:1,e:'Si la mala dieta es causa principal, se INFIERE que mejorar la dieta ayudaría.'},
+  {id:9,mat:'Comprensión Lectora',sub:'Tipos de texto',ic:'📖',q:'"La Tierra tarda 365 días en orbitar el Sol." Es:',o:['Narrativo','Argumentativo','Expositivo','Descriptivo'],a:2,e:'Datos objetivos sin opinar → texto EXPOSITIVO.'},
+  {id:10,mat:'Matemáticas',sub:'PEMDAS',ic:'🔢',q:'¿Cuánto es 3 + 4 × 2 − 1?',o:['13','10','14','12'],a:1,e:'PEMDAS: 4×2=8 primero. Luego 3+8−1=10.'},
+  {id:11,mat:'Matemáticas',sub:'Porcentajes',ic:'🔢',q:'¿Cuánto es el 25% de 320?',o:['60','70','80','90'],a:2,e:'25%=÷4. 320÷4=80.'},
+  {id:12,mat:'Matemáticas',sub:'Álgebra lineal',ic:'🔢',q:'Si 4x − 8 = 16, ¿cuánto vale x?',o:['4','5','6','7'],a:2,e:'4x=24 → x=6. Verifica: 4(6)−8=16 correcto.'},
+  {id:13,mat:'Matemáticas',sub:'Álgebra cuadrática',ic:'🔢',q:'Soluciones de x² − 5x + 6 = 0:',o:['1 y 6','2 y 3','3 y 4','−2 y −3'],a:1,e:'(x−2)(x−3)=0. x=2 y x=3.'},
+  {id:14,mat:'Matemáticas',sub:'Geometría',ic:'🔢',q:'Área de triángulo base 10cm, altura 6cm:',o:['30cm²','60cm²','16cm²','50cm²'],a:0,e:'Área=(10×6)÷2=30cm².'},
+  {id:15,mat:'Matemáticas',sub:'Pitágoras',ic:'🔢',q:'Triángulo rectángulo, catetos 5 y 12. Hipotenusa:',o:['13','15','11','17'],a:0,e:'c²=25+144=169 → c=13. Terna (5,12,13).'},
+  {id:16,mat:'Matemáticas',sub:'Estadística',ic:'🔢',q:'Mediana de: 3, 8, 5, 1, 9, 4, 7',o:['4','5','6','7'],a:1,e:'Ordenados: 1,3,4,5,7,8,9. Valor central=5.'},
+  {id:17,mat:'Matemáticas',sub:'Funciones',ic:'🔢',q:'Pendiente de la recta por (1,3) y (3,9):',o:['2','3','4','5'],a:1,e:'m=(9−3)/(3−1)=6/2=3.'},
+  {id:18,mat:'Matemáticas',sub:'Trigonometría',ic:'🔢',q:'Ángulo 30°, hipotenusa 20. ¿Lado opuesto?',o:['8','10','12','14'],a:1,e:'sen(30°)=0.5. Opuesto=20×0.5=10.'},
+  {id:19,mat:'Español',sub:'Morfología',ic:'✍️',q:'En "La niña corrió velozmente", ¿cuántos adverbios hay?',o:['0','1','2','3'],a:1,e:'"Velozmente" es el único adverbio.'},
+  {id:20,mat:'Español',sub:'Sintaxis',ic:'✍️',q:'Sujeto de "Los estudiantes aprobaron el examen":',o:['aprobaron el examen','Los estudiantes','el examen','aprobaron'],a:1,e:'Los estudiantes = sujeto.'},
+  {id:21,mat:'Español',sub:'Tipos de oración',ic:'✍️',q:'"Estudié mucho, sin embargo reprobé." Es:',o:['Simple','Compuesta coordinada adversativa','Subordinada causal','Yuxtapuesta'],a:1,e:'"Sin embargo" = conector adversativo.'},
+  {id:22,mat:'Español',sub:'Acentuación',ic:'✍️',q:'¿Cuál lleva tilde?',o:['camion','imagen','lapiz','examen'],a:2,e:'Lapiz: LA-piz, grave termina en z → lleva tilde.'},
+  {id:23,mat:'Español',sub:'Ortografía',ic:'✍️',q:'¿Cuál está escrita correctamente?',o:['avia llegado','había salido','ubiera venido','a bido aquí'],a:1,e:'"Había" = verbo haber → siempre con H.'},
+  {id:24,mat:'Español',sub:'Puntuación',ic:'✍️',q:'¿Cuándo se usa el punto y coma correctamente?',o:['Al terminar el texto','Para separar oraciones largas relacionadas','Antes de una pregunta','Después del saludo'],a:1,e:'El punto y coma separa oraciones largas relacionadas.'},
+  {id:25,mat:'Biología',sub:'Célula',ic:'🧬',q:'¿Qué organelo produce la energía (ATP)?',o:['Núcleo','Ribosoma','Mitocondria','Vacuola'],a:2,e:'La MITOCONDRIA produce ATP por respiración celular.'},
+  {id:26,mat:'Biología',sub:'ADN',ic:'🧬',q:'En ADN, la Timina (T) se empareja con:',o:['Guanina','Citosina','Adenina','Uracilo'],a:2,e:'Regla: A-T y G-C. Timina con ADENINA.'},
+  {id:27,mat:'Biología',sub:'División celular',ic:'🧬',q:'La MEIOSIS produce:',o:['2 células con 46','4 células con 23','2 células con 23','4 células con 46'],a:1,e:'Meiosis: 4 gametos con 23 cromosomas.'},
+  {id:28,mat:'Biología',sub:'Fotosíntesis',ic:'🧬',q:'Luz + CO2 + H2O produce:',o:['ATP + H2O','CO2 + H2O','Glucosa + O2','Glucosa + CO2'],a:2,e:'Fotosíntesis produce GLUCOSA y O2.'},
+  {id:29,mat:'Biología',sub:'Evolución',ic:'🧬',q:'Según Darwin, ¿qué organismos sobreviven más?',o:['Los más grandes','Los más fuertes','Los mejor adaptados','Los más veloces'],a:2,e:'Selección natural: sobreviven los MEJOR ADAPTADOS.'},
+  {id:30,mat:'Biología',sub:'Ecología',ic:'🧬',q:'¿Qué convierte materia inorgánica en orgánica?',o:['Consumidores','Descomponedores','Productores','Omnívoros'],a:2,e:'Los PRODUCTORES crean materia orgánica desde CO2 y agua.'},
+  {id:31,mat:'Química',sub:'Átomo',ic:'⚗️',q:'El número atómico indica el número de:',o:['Neutrones','Protones','Electrones externos','Masa atómica'],a:1,e:'Número atómico (Z) = PROTONES.'},
+  {id:32,mat:'Química',sub:'Enlace',ic:'⚗️',q:'El NaCl tiene enlace:',o:['Covalente polar','Covalente apolar','Metálico','Iónico'],a:3,e:'Na(metal)+Cl(no metal) = enlace IÓNICO.'},
+  {id:33,mat:'Química',sub:'Reacciones',ic:'⚗️',q:'CH4 + 2O2 → CO2 + 2H2O es:',o:['Síntesis','Descomposición','Combustión','Sustitución'],a:2,e:'COMBUSTIÓN: hidrocarburo + O2 → CO2 + H2O + calor.'},
+  {id:34,mat:'Química',sub:'pH',ic:'⚗️',q:'Una solución con pH = 3 es:',o:['Neutra','Básica','Fuertemente ácida','Ligeramente básica'],a:2,e:'pH 0-6=ácido. pH 3 es FUERTEMENTE ÁCIDO.'},
+  {id:35,mat:'Química',sub:'Lavoisier',ic:'⚗️',q:'La masa total de los reactivos en una reacción es:',o:['Mayor que productos','Menor que productos','Igual que productos','Variable'],a:2,e:'Ley de Lavoisier: la masa se CONSERVA.'},
+  {id:36,mat:'Física',sub:'Cinemática',ic:'⚡',q:'Auto a 90km/h durante 2.5 horas. ¿Distancia?',o:['200km','225km','250km','270km'],a:1,e:'d=v×t=90×2.5=225km.'},
+  {id:37,mat:'Física',sub:'Newton',ic:'⚡',q:'Fuerza 30N, masa 6kg. ¿Aceleración?',o:['3m/s2','4m/s2','5m/s2','6m/s2'],a:2,e:'F=ma → a=F/m=30/6=5m/s².'},
+  {id:38,mat:'Física',sub:'Energía',ic:'⚡',q:'Energía cinética de 3kg a 4m/s:',o:['12J','24J','36J','48J'],a:1,e:'Ec=½mv²=½×3×16=24J.'},
+  {id:39,mat:'Física',sub:'Caída libre',ic:'⚡',q:'Objeto cae durante 4 segundos (g=10). ¿Velocidad?',o:['20m/s','30m/s','40m/s','50m/s'],a:2,e:'v=g×t=10×4=40m/s.'},
+  {id:40,mat:'Historia',sub:'Prehispánico',ic:'🏛️',q:'¿Qué civilización desarrolló la escritura jeroglífica más completa de Mesoamérica?',o:['Aztecas','Olmecas','Mayas','Teotihuacanos'],a:2,e:'Los MAYAS: escritura, cero y calendario.'},
+  {id:41,mat:'Historia',sub:'Independencia',ic:'🏛️',q:'¿En qué año se consumó la Independencia de México?',o:['1810','1814','1821','1824'],a:2,e:'Inició en 1810 y se consumó el 27 sep 1821.'},
+  {id:42,mat:'Historia',sub:'Revolución',ic:'🏛️',q:'¿Qué documento convocó al levantamiento del 20 nov 1910?',o:['Plan de Iguala','Constitución 1917','Plan de San Luis','Plan de Ayala'],a:2,e:'El PLAN DE SAN LUIS de Madero.'},
+  {id:43,mat:'Historia',sub:'Universal',ic:'🏛️',q:'¿Qué desencadenó la Primera Guerra Mundial?',o:['Invasión de Polonia','Asesinato del archiduque Francisco Fernando','Revolución Rusa','Crisis económica'],a:1,e:'Asesinato del archiduque en Sarajevo (28 jun 1914).'},
+  {id:44,mat:'Historia',sub:'México s.XX',ic:'🏛️',q:'¿Qué fue histórico en la Constitución de 1917?',o:['Crear el ejército','Primera del mundo con derechos sociales','Separar Iglesia del Estado','Establecer la democracia'],a:1,e:'Primera del mundo en incluir derechos sociales.'},
+  {id:45,mat:'Geografía',sub:'Coordenadas',ic:'🌍',q:'Las líneas que miden la latitud son:',o:['Meridianos','Paralelos','Trópicos','Círculos polares'],a:1,e:'PARALELOS=latitud. MERIDIANOS=longitud.'},
+  {id:46,mat:'Geografía',sub:'Climas',ic:'🌍',q:'¿Qué clima predomina entre 0° y 23.5° de latitud?',o:['Polar','Templado','Subtropical árido','Tropical cálido y húmedo'],a:3,e:'Zona tropical: calor y lluvias todo el año.'},
+  {id:47,mat:'Geografía',sub:'México',ic:'🌍',q:'¿Por qué México es "megadiverso"?',o:['Es el más grande','Tiene 10% de especies del planeta','Tiene más climas','Tiene más ríos'],a:1,e:'Mexico megadiverso: ~10% de todas las especies. Top 5 mundial.'},
+  {id:48,mat:'Formación Cívica y Ética',sub:'Derechos humanos',ic:'⚖️',q:'El derecho a la educación pertenece a la:',o:['Primera generación','Segunda generación','Tercera generación','Cuarta generación'],a:1,e:'2ª generación: derechos económicos, sociales y culturales.'},
+  {id:49,mat:'Formación Cívica y Ética',sub:'Sistema político',ic:'⚖️',q:'¿Cuántos diputados integran la Cámara de Diputados?',o:['128','300','400','500'],a:3,e:'Cámara de Diputados: 500. Senado: 128.'},
+  {id:50,mat:'Formación Cívica y Ética',sub:'Democracia',ic:'⚖️',q:'Característica esencial de un Estado democrático:',o:['Tener ejército fuerte','Gobierno sin límites','El poder emana del pueblo','Solo votan los educados'],a:2,e:'En democracia: poder emana del pueblo y hay rendición de cuentas.'},
+  {id:51,mat:'Anatomía y Salud',sub:'Sistemas',ic:'🫀',q:'¿Dónde se absorben principalmente los nutrientes?',o:['Estómago','Intestino grueso','Intestino delgado','Esófago'],a:2,e:'El INTESTINO DELGADO es donde los nutrientes pasan a la sangre.'},
+  {id:52,mat:'Anatomía y Salud',sub:'Salud',ic:'🫀',q:'¿Qué hormona regula los niveles de glucosa?',o:['Adrenalina','Tiroxina','Insulina','Estrógeno'],a:2,e:'La INSULINA del páncreas regula la glucosa.'},
+];
+let DS={cur:0,ans:new Array(52).fill(null),results:null,view:'intro',tab:'plan',openW:{}};
+function pc2(p){return p>=80?'var(--t)':p>=60?'var(--a)':'var(--c)';}
+function rDiag(){var el=document.getElementById('s-diag');if(!el)return;if(DS.view==='intro')el.innerHTML=rDiagIntro();else if(DS.view==='exam')el.innerHTML=rDiagExam();else if(DS.view==='results')el.innerHTML=rDiagRes();else if(DS.view==='plan')el.innerHTML=rDiagPlan();}
+function rDiagIntro(){return'<div style="background:var(--pl);border:1px solid #AFA9EC;border-radius:var(--r);padding:20px;margin-bottom:14px"><div style="font-size:11px;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Examen diagnostico</div><div style="font-size:20px;font-weight:700;color:var(--pd);margin-bottom:8px">Descubre en qué temas necesitas enfocarte</div><div style="font-size:13px;color:var(--p);line-height:1.65">52 preguntas que cubren todos los bloques del ECOEMS. Recibirás análisis detallado y plan de estudio personalizado.</div></div><div style="background:var(--tl);border:1px solid #5DCAA5;border-radius:var(--r);padding:13px;margin-bottom:14px;font-size:13px;color:var(--td);line-height:1.65">Instrucción: Responde honestamente. Si no sabes algo, adivina. Este diagnóstico es para ayudarte.</div><button class="btn-p" style="width:100%;padding:14px;font-size:16px;border-radius:var(--r)" onclick="DS.view=\'exam\';DS.cur=0;DS.ans=new Array(52).fill(null);rDiag()">Iniciar diagnostico →</button>';}
+function rDiagExam(){var q=DIAG[DS.cur];var tot=DIAG.length;var ans=DS.ans[DS.cur]!==null;var isLast=DS.cur>=tot-1;var L=['A','B','C','D'];var pct=Math.round((DS.cur/tot)*100);var opts=q.o.map(function(o,i){var c='ob';if(ans){if(i===q.a)c+=' right';else if(i===DS.ans[DS.cur]&&i!==q.a)c+=' wrong';}return'<button class="'+c+'" onclick="diagSel('+i+')" '+(ans?'disabled':'')+'>'+' <span class="ol">'+L[i]+'</span>'+o+'</button>';}).join('');return'<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:600;color:var(--p)">'+q.mat+'</span><span style="font-size:13px;color:var(--tx2)">'+(DS.cur+1)+'/'+tot+'</span></div><div class="bar-w" style="height:6px;margin-bottom:14px"><div class="bar-f" style="width:'+pct+'%;background:var(--p)"></div></div></div><div class="card">'+' <div style="display:inline-block;background:var(--pl);color:var(--pd);border-radius:999px;padding:3px 12px;font-size:11px;font-weight:600;margin-bottom:12px">'+q.ic+' '+q.sub+'</div>'+(q.ctx?'<div style="background:var(--bg);border-left:3px solid var(--pm);border-radius:0 var(--rs) var(--rs) 0;padding:12px;margin-bottom:12px;font-size:13px;color:var(--tx2);line-height:1.75">'+q.ctx+'</div>':'')+'<div style="font-size:16px;color:var(--tx);line-height:1.65;margin-bottom:16px;font-weight:600">'+q.q+'</div>'+opts+'<div class="exp '+(ans?'on':'')+'">'+(ans?'Explicacion: '+q.e:'')+'</div></div><div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">'+(!ans?'<button class="btn-s btn-sm" onclick="diagSkip()">Omitir</button>':'')+(ans&&!isLast?'<button class="btn-p" onclick="DS.cur++;rDiag()">Siguiente</button>':'')+(ans&&isLast?'<button class="btn-p" style="padding:12px 24px;font-size:15px" onclick="calcDiag()">Ver mi diagnostico</button>':'')+'</div>';}
+function diagSel(i){if(DS.ans[DS.cur]!==null)return;DS.ans[DS.cur]=i;rDiag();}
+function diagSkip(){DS.ans[DS.cur]=-1;if(DS.cur<DIAG.length-1)DS.cur++;rDiag();}
+function calcDiag(){var mats={};DIAG.forEach(function(q,i){if(!mats[q.mat])mats[q.mat]={correct:0,total:0,wrong:[],ic:q.ic};mats[q.mat].total++;if(DS.ans[i]===q.a)mats[q.mat].correct++;else mats[q.mat].wrong.push({q:q.q,sub:q.sub,correct:q.o[q.a],exp:q.e});});var matArr=Object.entries(mats).map(function(e){return Object.assign({name:e[0]},e[1],{pct:Math.round((e[1].correct/e[1].total)*100)});}).sort(function(a,b){return a.pct-b.pct;});var totalCorrect=DIAG.filter(function(q,i){return DS.ans[i]===q.a;}).length;var totalPct=Math.round((totalCorrect/DIAG.length)*100);DS.results={mats:matArr,totalCorrect:totalCorrect,totalPct:totalPct};DS.view='results';rDiag();}
+function rDiagRes(){var r=DS.results;var mats=r.mats;var totalCorrect=r.totalCorrect;var totalPct=r.totalPct;var weak=mats.filter(function(m){return m.pct<70;});var ok=mats.filter(function(m){return m.pct>=70&&m.pct<90;});var str=mats.filter(function(m){return m.pct>=90;});var ec=Math.round((totalPct/100)*128);var msg=totalPct>=80?'Excelente base!':totalPct>=60?'Buen avance, hay areas que reforzar.':'Necesitas un plan de estudio solido.';function mBar(list,col){return list.map(function(m){return'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:16px">'+m.ic+'</span><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:600;color:var(--tx)">'+m.name+'</span><span style="font-size:12px;font-weight:700;color:'+col+'">'+m.pct+'%</span></div><div class="bar-w"><div class="bar-f" style="width:'+m.pct+'%;background:'+col+'"></div></div></div></div>';}).join('');}return'<div style="background:var(--pl);border:1px solid #AFA9EC;border-radius:var(--r);padding:20px;text-align:center;margin-bottom:14px"><div style="width:88px;height:88px;border-radius:50%;border:4px solid '+pc2(totalPct)+';background:var(--sf);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 12px"><div style="font-size:28px;font-weight:700;color:var(--tx);line-height:1">'+totalCorrect+'</div><div style="font-size:12px;color:var(--tx2)">de '+DIAG.length+'</div></div><div style="font-size:20px;font-weight:700;color:var(--pd);margin-bottom:4px">'+totalPct+'% de aciertos</div><div style="font-size:13px;color:var(--p)">'+msg+'</div></div><div class="g3" style="margin-bottom:14px">'+[{n:totalCorrect,l:'Correctas',c:'var(--t)'},{n:DIAG.length-totalCorrect,l:'Por reforzar',c:'var(--c)'},{n:ec+'/128',l:'Estimado ECOEMS',c:'var(--p)'}].map(function(s){return'<div class="sc"><div class="sn" style="color:'+s.c+'">'+s.n+'</div><div class="sl">'+s.l+'</div></div>';}).join('')+'</div>'+(weak.length?'<div class="card" style="border-left:4px solid var(--c);margin-bottom:12px"><p style="font-size:12px;font-weight:600;color:var(--c);text-transform:uppercase;margin-bottom:10px">Necesitas reforzar urgente</p>'+mBar(weak,'var(--c)')+'</div>':'')+(ok.length?'<div class="card" style="border-left:4px solid var(--a);margin-bottom:12px"><p style="font-size:12px;font-weight:600;color:var(--a);text-transform:uppercase;margin-bottom:10px">En proceso</p>'+mBar(ok,'var(--a)')+'</div>':'')+(str.length?'<div class="card" style="border-left:4px solid var(--t);margin-bottom:12px"><p style="font-size:12px;font-weight:600;color:var(--t);text-transform:uppercase;margin-bottom:10px">Dominas estas materias</p>'+mBar(str,'var(--t)')+'</div>':'')+'<button class="btn-p" style="width:100%;padding:13px;font-size:15px;margin-bottom:8px" onclick="DS.view=\'plan\';DS.tab=\'plan\';rDiag()">Ver mi plan de estudio</button><button class="btn-s" style="width:100%;padding:11px" onclick="DS.view=\'intro\';rDiag()">Repetir diagnostico</button>';}
+function rDiagPlan(){var r=DS.results;var mats=r.mats;var totalPct=r.totalPct;var weak=mats.filter(function(m){return m.pct<70;});var tabs=['plan','errores'];var tabLabels=['Plan semanal','Mis errores'];var html='<div style="display:flex;gap:5px;background:var(--bg);border-radius:var(--rs);padding:4px;margin-bottom:14px">'+tabs.map(function(t,i){return'<button onclick="DS.tab=\''+t+'\';rDiag()" style="flex:1;padding:7px 4px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:'+(DS.tab===t?'var(--sf)':'transparent')+';color:'+(DS.tab===t?'var(--p)':'var(--tx2)')+'">'+tabLabels[i]+'</button>';}).join('')+'</div>';if(DS.tab==='plan'){var ws=buildDPlan(weak,totalPct);html+=ws.map(function(w,i){return'<div class="ti" style="margin-bottom:10px"><button class="th" onclick="DS.openW['+i+']=!DS.openW['+i+'];rDiag()"><div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--tx)">'+w.title+'</div><div style="font-size:12px;color:var(--tx2);margin-top:2px">'+w.sub+'</div></div><div style="width:10px;height:10px;border-radius:50%;background:'+w.color+';margin-left:10px;flex-shrink:0"></div><span class="cv '+(DS.openW[i]?'open':'')+'" style="margin-left:6px">▾</span></button><div class="tb '+(DS.openW[i]?'open':'')+'">'+ w.days.map(function(d){return'<div style="padding:10px 0;border-bottom:1px solid var(--br)"><div style="font-size:11px;font-weight:700;color:var(--p);text-transform:uppercase;margin-bottom:4px">'+d.d+'</div><div style="font-size:13px;color:var(--tx2);line-height:1.65">'+d.c+'</div></div>';}).join('')+'</div></div>';}).join('');html+='<div style="background:var(--tl);border:1px solid #5DCAA5;border-radius:var(--r);padding:13px;margin-top:6px;font-size:13px;color:var(--td);line-height:1.75"><strong>Claves del exito:</strong> Estudia 1.5-2 horas diarias. Duerme 8 horas. Haz simulacros cronometrados. Con 78% de aciertos apruebas el ECOEMS.</div>';}else{var allW=DS.results.mats.filter(function(m){return m.wrong.length>0;});if(!allW.length){html+='<div class="card" style="text-align:center;padding:30px"><div style="font-size:36px;margin-bottom:10px">🏆</div><div style="font-size:16px;font-weight:600;">Sin errores!</div></div>';}else{html+=allW.map(function(m){return'<div class="card" style="border-left:3px solid var(--c);margin-bottom:10px"><p style="font-size:12px;font-weight:600;color:var(--c);margin-bottom:9px">'+m.ic+' '+m.name+'</p>'+m.wrong.map(function(w){return'<div style="background:var(--bg);border-radius:var(--rs);padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--tx2);margin-bottom:4px">'+w.sub+'</div><div style="font-size:13px;color:var(--tx);margin-bottom:6px;line-height:1.55">'+w.q+'</div><div style="font-size:13px;color:var(--t);margin-bottom:3px">Correcta: '+w.correct+'</div><div style="font-size:12px;color:var(--tx2);font-style:italic">'+w.exp+'</div></div>';}).join('')+'</div>';}).join('');}}return html;}
+function buildDPlan(weak,totalPct){var ws=[];var w0=weak[0]?weak[0].name:'la materia más débil';var w1=weak[1]?weak[1].name:'segunda materia débil';var w2=weak[2]?weak[2].name:'Biología';var w3=weak[3]?weak[3].name:'Química';if(totalPct<60){ws.push({title:'Semanas 1-2: Fundamentos criticos',sub:'Prioridad: '+weak.slice(0,3).map(function(m){return m.name;}).join(', '),color:'var(--c)',days:[{d:'Lunes-Martes',c:'2 horas diarias a: '+w0+'. Estudia el temario completo. Haz el examen de práctica al terminar.'},{d:'Miercoles-Jueves',c:'2 horas diarias a: '+w1+'. Lee el temario. Haz ejercicios. Anota conceptos clave.'},{d:'Viernes',c:'Simulacro temático 1 hora con las materias de la semana. Registra tu resultado.'},{d:'Sabado',c:'Técnica Feynman: explica en voz alta todo lo aprendido esta semana.'},{d:'Domingo',c:'Descanso. Planifica la siguiente semana.'}]});ws.push({title:'Semanas 3-4: Materias débiles restantes',sub:weak.slice(2).map(function(m){return m.name;}).join(', ')||'Consolidación',color:'var(--c)',days:[{d:'Lunes-Martes',c:'Estudia: '+w2+'. Usa la IA de la app. Presiona Escuchar para reforzar.'},{d:'Miercoles-Jueves',c:'Estudia: '+w3+'. Revisa los temas que fallaste en el diagnóstico.'},{d:'Viernes',c:'Simulacro completo de 2 horas. Compara con la semana anterior.'},{d:'Sabado',c:'Analiza errores del simulacro. Estudia lo que sigue fallando.'},{d:'Domingo',c:'Lee un artículo para practicar comprensión lectora.'}]});}ws.push({title:'Semanas de consolidación',sub:'Materias en proceso + Habilidades',color:'var(--a)',days:[{d:'Lunes',c:'Comprensión Lectora: lee un texto de 300+ palabras y responde preguntas. Método PQR.'},{d:'Martes',c:'Habilidad Verbal: 20 ejercicios de sinónimos, antónimos y analogías.'},{d:'Miercoles',c:'Habilidad Matemática: 15 series numéricas y 10 problemas de razonamiento.'},{d:'Jueves',c:'Simulacro temático 2h: Matemáticas + Ciencias.'},{d:'Viernes',c:'Simulacro temático 1h: Humanidades (Historia, Geografía, Cívica, Español).'},{d:'Sabado',c:'Repasa errores. Usa la IA de la app para explicaciones.'},{d:'Domingo',c:'Descanso completo.'}]});ws.push({title:'Semana de simulacros intensivos',sub:'3 simulacros completos + análisis profundo',color:'var(--p)',days:[{d:'Lunes',c:'SIMULACRO COMPLETO 128 preguntas (3 horas). Registra tu puntaje.'},{d:'Martes',c:'Analiza a fondo los errores. 2 horas de estudio específico.'},{d:'Miercoles',c:'SIMULACRO COMPLETO otra vez. Meta: superar el puntaje del lunes.'},{d:'Jueves',c:'Análisis de errores. Enfasis en Habilidad Verbal y Comprensión Lectora.'},{d:'Viernes',c:'Simulacro 1.5h con solo las materias donde sigues fallando.'},{d:'Sabado',c:'Repaso de trucos y mnemotecnias. Sin exámenes.'},{d:'Domingo',c:'Descanso.'}]});ws.push({title:'Semana final: Confianza y estrategia',sub:'Últimos repasos y estrategia para el día del examen',color:'var(--t)',days:[{d:'Lunes',c:'Repaso rápido: 30 min por materia. NO estudies cosas nuevas.'},{d:'Martes',c:'Simulacro 2 horas. Practica: leer dos veces, eliminar opciones, saltar difíciles.'},{d:'Miercoles',c:'Repasa trucos clave: PEMDAS, ternas pitagóricas, tipos de texto.'},{d:'Jueves',c:'Noche anterior: revisa tus notas 30 min. Prepara: credencial, lápices, goma, agua.'},{d:'Dia del ECOEMS',c:'Desayuna bien. Llega 30 min antes. Estrategia: 1) Lee dos veces. 2) Elimina lo que SEGURO esta mal. 3) Si dudas, pasa y regresa. 4) Responde TODAS. 5) Panico: 3 respiraciones y continua.'}]});return ws;}
 
 // ── INIT ──────────────────────────────────────────────────────────
 sl();rSaved();
