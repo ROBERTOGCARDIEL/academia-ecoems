@@ -269,12 +269,9 @@ async function initSupabase(){
     gt('dash');
   }
 
-  // Escucha cambios de sesión
+  // Escucha cambios de sesión (solo para cambios externos, no para login manual)
   SUPA.auth.onAuthStateChange(async (event, session)=>{
-    if(event==='SIGNED_IN' && session){
-      CU_UID = session.user.id;
-      await loadUserData();
-    } else if(event==='SIGNED_OUT'){
+    if(event==='SIGNED_OUT'){
       CU_DATA=null; CU_UID=null;
     }
   });
@@ -410,7 +407,13 @@ async function doLogin(){
 
   CU_UID = data.user.id;
   await loadUserData();
-  enterApp();
+
+  // Entra directo a la app sin recargar
+  document.getElementById('ls').classList.remove('on');
+  document.getElementById('app').style.display='flex';
+  const nombre=(CU_DATA&&CU_DATA.name)?CU_DATA.name:'Usuario';
+  document.getElementById('uname').textContent='Hola, '+nombre+' 👋';
+  gt('dash');
 }
 
 // ── LOGOUT ────────────────────────────────────────────────────────
