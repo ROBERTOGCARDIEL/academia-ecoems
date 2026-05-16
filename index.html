@@ -386,6 +386,16 @@ async function doOut(){
 
 function rSaved(){}
 
+function showLogin(){
+  document.getElementById('a-login').style.display='block';
+  document.getElementById('a-reg').style.display='none';
+}
+function showReg(){
+  document.getElementById('a-login').style.display='none';
+  document.getElementById('a-reg').style.display='block';
+}
+
+
 // ── NAV ──────────────────────────────────────────────────────────
 const TABS=['dash','study','em','prog','tips','diag'];
 function gt(id){
