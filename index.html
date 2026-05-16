@@ -232,8 +232,8 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 <script>
 
 // ── SUPABASE CONFIG ─────────────────────────────────────────────
-const SUPA_URL = 'SUPABASE_URL';
-const SUPA_KEY = 'SUPABASE_ANON_KEY';
+const SUPA_URL = 'https://fayajpwvfbyhiyjkludo.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZheWFqcHd2ZmJ5aGl5amtsdWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MzgzNDgsImV4cCI6MjA5NDUxNDM0OH0.uKwxfiAx-FRa2B3oSII5PesIjQV5SekaIFOSqj7T7Qk';
 let SUPA = null;
 
 // ── ESTADO GLOBAL ────────────────────────────────────────────────
@@ -1398,3 +1398,11 @@ document.getElementById('iu').addEventListener('keydown',e=>{if(e.key==='Enter')
 </script>
 </body>
 </html>
+function enterApp(){
+  document.getElementById('ls').classList.remove('on');
+  document.getElementById('app').style.display='flex';
+  const nombre=(CU_DATA&&CU_DATA.name)?CU_DATA.name:'Usuario';
+  document.getElementById('uname').textContent='Hola, '+nombre+' 👋';
+  gt('dash');
+}
+
