@@ -334,16 +334,54 @@ async function doReg(){
 
   if(btn){btn.textContent='Crear mi cuenta →';btn.disabled=false;}
   if(error){
-    const msgs={'User already registered':'Este correo ya tiene cuenta. Inicia sesión.'};
-    err.textContent=msgs[error.message]||error.message;
+    // Si el correo ya existe, redirige al login automáticamente
+    if(error.message==='User already registered'||error.message.toLowerCase().includes('already')){
+      showLogin();
+      document.getElementById('iu').value=email;
+      const lerr=document.getElementById('lerr');
+      lerr.textContent='Ya tienes cuenta. Escribe tu contraseña para entrar.';
+      lerr.style.display='block';
+      return;
+    }
+    const msgs={
+      'Password should be at least 6 characters':'La contraseña debe tener mínimo 6 caracteres.',
+      'Unable to validate email address: invalid format':'El correo no tiene formato válido.'
+    };
+    err.textContent=msgs[error.message]||('Error: '+error.message);
     err.style.display='block';
     return;
   }
 
+  // Registro exitoso — inicia sesión automáticamente
   CU_UID = data.user.id;
   CU_DATA = {id:CU_UID, name:nm, history:[], ss:{}, diagResults:null, studyPlan:null};
-  await SUPA.from('users').upsert(CU_DATA);
-  enterApp();
+
+  // Guarda los datos del usuario
+  try {
+    await SUPA.from('users').upsert({
+      id:CU_UID, name:nm, history:[], ss:{}, diagResults:null, studyPlan:null
+    });
+  } catch(e){ console.warn('upsert:', e); }
+
+  // Si la sesión ya está activa, entra directo
+  if(data.session){
+    enterApp();
+    return;
+  }
+
+  // Si no hay sesión (confirmación pendiente), inicia sesión con las credenciales
+  const {data:loginData, error:loginErr} = await SUPA.auth.signInWithPassword({email, password:pw});
+  if(!loginErr && loginData.user){
+    CU_UID = loginData.user.id;
+    enterApp();
+  } else {
+    // Como último recurso, manda al login con el correo pre-llenado
+    showLogin();
+    document.getElementById('iu').value = email;
+    document.getElementById('lerr').textContent = '¡Cuenta creada! Ingresa tu contraseña para entrar.';
+    document.getElementById('lerr').style.color = 'var(--t)';
+    document.getElementById('lerr').style.display = 'block';
+  }
 }
 
 // ── LOGIN ─────────────────────────────────────────────────────────
