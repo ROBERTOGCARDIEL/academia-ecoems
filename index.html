@@ -118,10 +118,10 @@ input:focus{outline:none;border-color:var(--p)}
     <h1 style="font-size:20px;font-weight:700;text-align:center;margin-bottom:4px">Academia ECOEMS</h1>
     <p style="font-size:13px;color:var(--tx2);text-align:center;margin-bottom:20px">CCH UNAM · IPN · Meta: 100/128 · IA + Voz 🤖🔊</p>
     <div id="a-login">
-      <p style="font-size:13px;font-weight:600;margin-bottom:5px">Usuario</p>
-      <input type="text" id="iu" placeholder="Tu nombre de usuario" autocomplete="username" style="margin-bottom:9px">
+      <p style="font-size:13px;font-weight:600;margin-bottom:5px">Correo electrónico</p>
+      <input type="email" id="iu" placeholder="tu@correo.com" autocomplete="email" style="margin-bottom:9px">
       <p style="font-size:13px;font-weight:600;margin-bottom:5px">Contraseña</p>
-      <input type="password" id="ip" placeholder="Mínimo 4 caracteres" autocomplete="current-password" style="margin-bottom:13px">
+      <input type="password" id="ip" placeholder="Mínimo 6 caracteres" autocomplete="current-password" style="margin-bottom:13px">
       <button class="btn-p" style="width:100%" onclick="doLogin()">Entrar →</button>
       <p id="lerr" style="font-size:12px;color:var(--c);text-align:center;margin-top:7px;display:none"></p>
       <hr style="border:none;border-top:1px solid var(--br);margin:15px 0">
@@ -130,10 +130,10 @@ input:focus{outline:none;border-color:var(--p)}
     <div id="a-reg" style="display:none">
       <p style="font-size:13px;font-weight:600;margin-bottom:5px">Tu nombre</p>
       <input type="text" id="rn" placeholder="Ej: María García" style="margin-bottom:9px">
-      <p style="font-size:13px;font-weight:600;margin-bottom:5px">Usuario (sin espacios)</p>
-      <input type="text" id="ru" placeholder="Ej: maria123" autocomplete="username" style="margin-bottom:9px">
+      <p style="font-size:13px;font-weight:600;margin-bottom:5px">Correo electrónico</p>
+      <input type="email" id="ru" placeholder="tu@correo.com" autocomplete="email" style="margin-bottom:9px">
       <p style="font-size:13px;font-weight:600;margin-bottom:5px">Contraseña</p>
-      <input type="password" id="rp" placeholder="Mínimo 4 caracteres" autocomplete="new-password" style="margin-bottom:13px">
+      <input type="password" id="rp" placeholder="Mínimo 6 caracteres" autocomplete="new-password" style="margin-bottom:13px">
       <button class="btn-p" style="width:100%" onclick="doReg()">Crear mi cuenta →</button>
       <p id="rerr" style="font-size:12px;color:var(--c);text-align:center;margin-top:7px;display:none"></p>
       <hr style="border:none;border-top:1px solid var(--br);margin:15px 0">
@@ -167,6 +167,7 @@ input:focus{outline:none;border-color:var(--p)}
     </div>
     <button class="btn-s btn-sm" onclick="doOut()">Salir</button>
   </nav>
+  <div id="sync-banner" style="display:none;background:var(--tl);border-bottom:1px solid #5DCAA5;padding:6px 16px;font-size:12px;color:var(--td);align-items:center;gap:8px">✅ Guardado en la nube</div>
   <div style="flex:1;overflow-y:auto">
     <div id="s-dash" class="screen on"></div>
     <div id="s-study" class="screen"></div>
@@ -220,52 +221,161 @@ input:focus{outline:none;border-color:var(--p)}
 </div>
 
 <script>
-// ── STORAGE ──────────────────────────────────────────────────────
-const SK='ecoems_v6';
-let US={},CU=null;
-function sl(){try{const r=localStorage.getItem(SK);if(r)US=JSON.parse(r);}catch(e){}}
-function ss(){try{localStorage.setItem(SK,JSON.stringify(US));}catch(e){}}
-function cu(){return CU&&US[CU]?US[CU]:null;}
+
+// ── SUPABASE CONFIG ─────────────────────────────────────────────
+const SUPA_URL = 'SUPABASE_URL';
+const SUPA_KEY = 'SUPABASE_ANON_KEY';
+let SUPA = null;
+
+// ── ESTADO GLOBAL ────────────────────────────────────────────────
+let CU_DATA = null;
+let CU_UID  = null;
+
 function pc(p){return p>=78?'var(--t)':p>=60?'var(--a)':'var(--c)';}
 function ft(s){const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');}
 function sh(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function cu(){return CU_DATA;}
 
-// ── AUTH ──────────────────────────────────────────────────────────
-function showLogin(){document.getElementById('a-login').style.display='block';document.getElementById('a-reg').style.display='none';}
-function showReg(){document.getElementById('a-login').style.display='none';document.getElementById('a-reg').style.display='block';}
-function doLogin(){
-  const u=document.getElementById('iu').value.trim().toLowerCase();
-  const p=document.getElementById('ip').value;
-  const e=document.getElementById('lerr');e.style.display='none';
-  if(!u||!p){e.textContent='Escribe usuario y contraseña.';e.style.display='block';return;}
-  if(!US[u]){e.textContent='Usuario no encontrado.';e.style.display='block';return;}
-  if(US[u].pw!==btoa(p)){e.textContent='Contraseña incorrecta.';e.style.display='block';return;}
-  CU=u;enterApp();
+let syncTimer=null;
+function showSyncBanner(){
+  const b=document.getElementById('sync-banner');
+  if(b){b.style.display='flex';clearTimeout(syncTimer);syncTimer=setTimeout(()=>b.style.display='none',2500);}
 }
-function doReg(){
-  const nm=document.getElementById('rn').value.trim();
-  const u=document.getElementById('ru').value.trim().toLowerCase().replace(/\s+/g,'');
-  const p=document.getElementById('rp').value;
-  const e=document.getElementById('rerr');e.style.display='none';
-  if(!nm||!u||!p){e.textContent='Rellena todos los campos.';e.style.display='block';return;}
-  if(p.length<4){e.textContent='Contraseña mínimo 4 caracteres.';e.style.display='block';return;}
-  if(US[u]){e.textContent='Usuario ya existe.';e.style.display='block';return;}
-  US[u]={name:nm,pw:btoa(p),created:Date.now(),history:[],ss:{},wq:[]};
-  ss();CU=u;rSaved();enterApp();
+
+// ── INICIALIZAR SUPABASE ─────────────────────────────────────────
+async function initSupabase(){
+  if(SUPA) return;
+  const {createClient} = await import('https://fayajpwvfbyhiyjkludo.supabase.co/rest/v1/');
+  SUPA = createClient(sb_publishable_GSYZb-m8P3DJtGDxRQmSTQ_6NihI2fZ);
+
+  // Detecta sesión activa (sesión persistente automática)
+  const {data:{session}} = await SUPA.auth.getSession();
+  if(session){
+    CU_UID = session.user.id;
+    await loadUserData();
+    // Si ya hay sesión, entra directo
+    document.getElementById('ls').classList.remove('on');
+    document.getElementById('app').style.display='flex';
+    document.getElementById('uname').textContent='Hola, '+(CU_DATA&&CU_DATA.name?CU_DATA.name:'Usuario')+' 👋';
+    gt('dash');
+  }
+
+  // Escucha cambios de sesión
+  SUPA.auth.onAuthStateChange(async (event, session)=>{
+    if(event==='SIGNED_IN' && session){
+      CU_UID = session.user.id;
+      await loadUserData();
+    } else if(event==='SIGNED_OUT'){
+      CU_DATA=null; CU_UID=null;
+    }
+  });
 }
-function doOut(){CU=null;document.getElementById('app').style.display='none';document.getElementById('ls').classList.add('on');stopX();stopVoice();}
-function enterApp(){
-  document.getElementById('ls').classList.remove('on');
-  document.getElementById('app').style.display='flex';
-  document.getElementById('uname').textContent='Hola, '+cu().name+' 👋';
-  gt('dash');
+
+// ── CARGAR DATOS DEL USUARIO ─────────────────────────────────────
+async function loadUserData(){
+  if(!SUPA||!CU_UID) return;
+  const {data,error} = await SUPA.from('users').select('*').eq('id',CU_UID).single();
+  if(error||!data){
+    // Primera vez: crea el registro
+    const nm = (await SUPA.auth.getUser()).data.user?.user_metadata?.name || 'Usuario';
+    CU_DATA = {id:CU_UID, name:nm, history:[], ss:{}, diagResults:null, studyPlan:null};
+    await SUPA.from('users').insert(CU_DATA);
+  } else {
+    CU_DATA = data;
+    // Parsea JSON si vino como string
+    if(typeof CU_DATA.history==='string') CU_DATA.history=JSON.parse(CU_DATA.history||'[]');
+    if(typeof CU_DATA.ss==='string') CU_DATA.ss=JSON.parse(CU_DATA.ss||'{}');
+    if(typeof CU_DATA.diagResults==='string' && CU_DATA.diagResults) CU_DATA.diagResults=JSON.parse(CU_DATA.diagResults);
+    if(typeof CU_DATA.studyPlan==='string' && CU_DATA.studyPlan) CU_DATA.studyPlan=JSON.parse(CU_DATA.studyPlan);
+  }
 }
-function rSaved(){
-  const k=Object.keys(US);const sv=document.getElementById('saved');const sl2=document.getElementById('slist');
-  if(!k.length){sv.style.display='none';return;}
-  sv.style.display='block';
-  sl2.innerHTML=k.map(u=>`<button onclick="document.getElementById('iu').value='${u}';document.getElementById('ip').focus()" style="background:var(--pl);color:var(--pd);border:none;border-radius:999px;padding:5px 13px;font-size:13px;cursor:pointer;font-family:inherit">${US[u].name}</button>`).join('');
+
+// ── GUARDAR DATOS ────────────────────────────────────────────────
+async function ss(){
+  if(!SUPA||!CU_UID||!CU_DATA) return;
+  await SUPA.from('users').upsert({
+    id: CU_UID,
+    name: CU_DATA.name,
+    history: CU_DATA.history||[],
+    ss: CU_DATA.ss||{},
+    diagResults: CU_DATA.diagResults||null,
+    studyPlan: CU_DATA.studyPlan||null,
+    updated_at: new Date().toISOString()
+  });
+  showSyncBanner();
 }
+
+// ── REGISTRO ─────────────────────────────────────────────────────
+async function doReg(){
+  const nm  = document.getElementById('rn').value.trim();
+  const email = document.getElementById('ru').value.trim().toLowerCase();
+  const pw  = document.getElementById('rp').value;
+  const err = document.getElementById('rerr');
+  err.style.display='none';
+  if(!nm||!email||!pw){err.textContent='Rellena todos los campos.';err.style.display='block';return;}
+  if(pw.length<6){err.textContent='La contraseña debe tener mínimo 6 caracteres.';err.style.display='block';return;}
+  if(!email.includes('@')){err.textContent='Escribe un correo electrónico válido.';err.style.display='block';return;}
+
+  const btn=document.querySelector('#a-reg .btn-p');
+  if(btn){btn.textContent='Creando cuenta...';btn.disabled=true;}
+
+  const {data,error} = await SUPA.auth.signUp({
+    email, password:pw, options:{data:{name:nm}}
+  });
+
+  if(btn){btn.textContent='Crear mi cuenta →';btn.disabled=false;}
+  if(error){
+    const msgs={'User already registered':'Este correo ya tiene cuenta. Inicia sesión.'};
+    err.textContent=msgs[error.message]||error.message;
+    err.style.display='block';
+    return;
+  }
+
+  CU_UID = data.user.id;
+  CU_DATA = {id:CU_UID, name:nm, history:[], ss:{}, diagResults:null, studyPlan:null};
+  await SUPA.from('users').upsert(CU_DATA);
+  enterApp();
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────────
+async function doLogin(){
+  const email = document.getElementById('iu').value.trim().toLowerCase();
+  const pw    = document.getElementById('ip').value;
+  const err   = document.getElementById('lerr');
+  err.style.display='none';
+  if(!email||!pw){err.textContent='Escribe tu correo y contraseña.';err.style.display='block';return;}
+
+  const btn=document.querySelector('#a-login .btn-p');
+  if(btn){btn.textContent='Entrando...';btn.disabled=true;}
+
+  const {data,error} = await SUPA.auth.signInWithPassword({email,password:pw});
+
+  if(btn){btn.textContent='Entrar →';btn.disabled=false;}
+  if(error){
+    const msgs={
+      'Invalid login credentials':'Correo o contraseña incorrectos.',
+      'Email not confirmed':'Confirma tu correo antes de entrar.'
+    };
+    err.textContent=msgs[error.message]||error.message;
+    err.style.display='block';
+    return;
+  }
+
+  CU_UID = data.user.id;
+  await loadUserData();
+  enterApp();
+}
+
+// ── LOGOUT ────────────────────────────────────────────────────────
+async function doOut(){
+  if(SUPA) await SUPA.auth.signOut();
+  CU_DATA=null; CU_UID=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('ls').classList.add('on');
+  stopX(); stopVoice();
+}
+
+function rSaved(){}
 
 // ── NAV ──────────────────────────────────────────────────────────
 const TABS=['dash','study','em','prog','tips','diag'];
@@ -878,7 +988,7 @@ console.log('Temario completo aplicado correctamente.');
 // ── DASHBOARD ────────────────────────────────────────────────────
 function rDash(){
   const u=cu();if(!u)return;
-  const h=u.history||[];const ss=u.ss||{};
+  const h=(u.history||[]);const ss=(u.ss||{});
   const avg=h.length?Math.round(h.reduce((a,b)=>a+b.pct,0)/h.length):0;
   const ec=Math.round((avg/100)*128);
   const sj=Object.entries(SB);
@@ -1085,10 +1195,10 @@ function xFinish(){
   const rec={type,date:Date.now(),correct,total:qs.length,pct,sR,time:EX.tot-EX.tl};
   const u=cu();
   if(u){
-    u.history=[rec,...(u.history||[])].slice(0,50);
-    const ss=u.ss||{};
-    Object.entries(sR).forEach(([k,v])=>{const p=Math.round((v.c/v.t)*100);ss[k]=ss[k]!==undefined?Math.round((ss[k]+p)/2):p;});
-    u.ss=ss;ss();
+    CU_DATA.history=[rec,...(CU_DATA.history||[])].slice(0,50);
+    const ss2=CU_DATA.ss||{};
+    Object.entries(sR).forEach(([k,v])=>{const p=Math.round((v.c/v.t)*100);ss2[k]=ss2[k]!==undefined?Math.round((ss2[k]+p)/2):p;});
+    CU_DATA.ss=ss2; ss();
   }
   rRes(rec,qs,ans);
 }
@@ -1121,7 +1231,7 @@ function rRes(rec,qs,ans){
 // ── PROGRESS ─────────────────────────────────────────────────────
 function rProg(){
   const u=cu();if(!u)return;
-  const h=u.history||[];const ss=u.ss||{};
+  const h=(u.history||[]);const ss=(u.ss||{});
   if(!h.length){document.getElementById('s-prog').innerHTML='<div style="text-align:center;padding:4rem;color:var(--tx2)">📊<br><br>Completa tu primer examen para ver tu progreso.</div>';return;}
   const avg=Math.round(h.reduce((a,b)=>a+b.pct,0)/h.length);
   const best=Math.max(...h.map(x=>x.pct));
@@ -1255,13 +1365,14 @@ function rDiagIntro(){return'<div style="background:var(--pl);border:1px solid #
 function rDiagExam(){var q=DIAG[DS.cur];var tot=DIAG.length;var ans=DS.ans[DS.cur]!==null;var isLast=DS.cur>=tot-1;var L=['A','B','C','D'];var pct=Math.round((DS.cur/tot)*100);var opts=q.o.map(function(o,i){var c='ob';if(ans){if(i===q.a)c+=' right';else if(i===DS.ans[DS.cur]&&i!==q.a)c+=' wrong';}return'<button class="'+c+'" onclick="diagSel('+i+')" '+(ans?'disabled':'')+'>'+' <span class="ol">'+L[i]+'</span>'+o+'</button>';}).join('');return'<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:600;color:var(--p)">'+q.mat+'</span><span style="font-size:13px;color:var(--tx2)">'+(DS.cur+1)+'/'+tot+'</span></div><div class="bar-w" style="height:6px;margin-bottom:14px"><div class="bar-f" style="width:'+pct+'%;background:var(--p)"></div></div></div><div class="card">'+' <div style="display:inline-block;background:var(--pl);color:var(--pd);border-radius:999px;padding:3px 12px;font-size:11px;font-weight:600;margin-bottom:12px">'+q.ic+' '+q.sub+'</div>'+(q.ctx?'<div style="background:var(--bg);border-left:3px solid var(--pm);border-radius:0 var(--rs) var(--rs) 0;padding:12px;margin-bottom:12px;font-size:13px;color:var(--tx2);line-height:1.75">'+q.ctx+'</div>':'')+'<div style="font-size:16px;color:var(--tx);line-height:1.65;margin-bottom:16px;font-weight:600">'+q.q+'</div>'+opts+'<div class="exp '+(ans?'on':'')+'">'+(ans?'Explicacion: '+q.e:'')+'</div></div><div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">'+(!ans?'<button class="btn-s btn-sm" onclick="diagSkip()">Omitir</button>':'')+(ans&&!isLast?'<button class="btn-p" onclick="DS.cur++;rDiag()">Siguiente</button>':'')+(ans&&isLast?'<button class="btn-p" style="padding:12px 24px;font-size:15px" onclick="calcDiag()">Ver mi diagnostico</button>':'')+'</div>';}
 function diagSel(i){if(DS.ans[DS.cur]!==null)return;DS.ans[DS.cur]=i;rDiag();}
 function diagSkip(){DS.ans[DS.cur]=-1;if(DS.cur<DIAG.length-1)DS.cur++;rDiag();}
-function calcDiag(){var mats={};DIAG.forEach(function(q,i){if(!mats[q.mat])mats[q.mat]={correct:0,total:0,wrong:[],ic:q.ic};mats[q.mat].total++;if(DS.ans[i]===q.a)mats[q.mat].correct++;else mats[q.mat].wrong.push({q:q.q,sub:q.sub,correct:q.o[q.a],exp:q.e});});var matArr=Object.entries(mats).map(function(e){return Object.assign({name:e[0]},e[1],{pct:Math.round((e[1].correct/e[1].total)*100)});}).sort(function(a,b){return a.pct-b.pct;});var totalCorrect=DIAG.filter(function(q,i){return DS.ans[i]===q.a;}).length;var totalPct=Math.round((totalCorrect/DIAG.length)*100);DS.results={mats:matArr,totalCorrect:totalCorrect,totalPct:totalPct};DS.view='results';rDiag();}
+function calcDiag(){var mats={};DIAG.forEach(function(q,i){if(!mats[q.mat])mats[q.mat]={correct:0,total:0,wrong:[],ic:q.ic};mats[q.mat].total++;if(DS.ans[i]===q.a)mats[q.mat].correct++;else mats[q.mat].wrong.push({q:q.q,sub:q.sub,correct:q.o[q.a],exp:q.e});});var matArr=Object.entries(mats).map(function(e){return Object.assign({name:e[0]},e[1],{pct:Math.round((e[1].correct/e[1].total)*100)});}).sort(function(a,b){return a.pct-b.pct;});var totalCorrect=DIAG.filter(function(q,i){return DS.ans[i]===q.a;}).length;var totalPct=Math.round((totalCorrect/DIAG.length)*100);DS.results={mats:matArr,totalCorrect:totalCorrect,totalPct:totalPct};
+  if(cu()){CU_DATA.diagResults=DS.results;CU_DATA.studyPlan=buildDPlan(matArr.filter(function(m){return m.pct<70;}),totalPct);ss();}DS.view='results';rDiag();}
 function rDiagRes(){var r=DS.results;var mats=r.mats;var totalCorrect=r.totalCorrect;var totalPct=r.totalPct;var weak=mats.filter(function(m){return m.pct<70;});var ok=mats.filter(function(m){return m.pct>=70&&m.pct<90;});var str=mats.filter(function(m){return m.pct>=90;});var ec=Math.round((totalPct/100)*128);var msg=totalPct>=80?'Excelente base!':totalPct>=60?'Buen avance, hay areas que reforzar.':'Necesitas un plan de estudio solido.';function mBar(list,col){return list.map(function(m){return'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:16px">'+m.ic+'</span><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:600;color:var(--tx)">'+m.name+'</span><span style="font-size:12px;font-weight:700;color:'+col+'">'+m.pct+'%</span></div><div class="bar-w"><div class="bar-f" style="width:'+m.pct+'%;background:'+col+'"></div></div></div></div>';}).join('');}return'<div style="background:var(--pl);border:1px solid #AFA9EC;border-radius:var(--r);padding:20px;text-align:center;margin-bottom:14px"><div style="width:88px;height:88px;border-radius:50%;border:4px solid '+pc2(totalPct)+';background:var(--sf);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 12px"><div style="font-size:28px;font-weight:700;color:var(--tx);line-height:1">'+totalCorrect+'</div><div style="font-size:12px;color:var(--tx2)">de '+DIAG.length+'</div></div><div style="font-size:20px;font-weight:700;color:var(--pd);margin-bottom:4px">'+totalPct+'% de aciertos</div><div style="font-size:13px;color:var(--p)">'+msg+'</div></div><div class="g3" style="margin-bottom:14px">'+[{n:totalCorrect,l:'Correctas',c:'var(--t)'},{n:DIAG.length-totalCorrect,l:'Por reforzar',c:'var(--c)'},{n:ec+'/128',l:'Estimado ECOEMS',c:'var(--p)'}].map(function(s){return'<div class="sc"><div class="sn" style="color:'+s.c+'">'+s.n+'</div><div class="sl">'+s.l+'</div></div>';}).join('')+'</div>'+(weak.length?'<div class="card" style="border-left:4px solid var(--c);margin-bottom:12px"><p style="font-size:12px;font-weight:600;color:var(--c);text-transform:uppercase;margin-bottom:10px">Necesitas reforzar urgente</p>'+mBar(weak,'var(--c)')+'</div>':'')+(ok.length?'<div class="card" style="border-left:4px solid var(--a);margin-bottom:12px"><p style="font-size:12px;font-weight:600;color:var(--a);text-transform:uppercase;margin-bottom:10px">En proceso</p>'+mBar(ok,'var(--a)')+'</div>':'')+(str.length?'<div class="card" style="border-left:4px solid var(--t);margin-bottom:12px"><p style="font-size:12px;font-weight:600;color:var(--t);text-transform:uppercase;margin-bottom:10px">Dominas estas materias</p>'+mBar(str,'var(--t)')+'</div>':'')+'<button class="btn-p" style="width:100%;padding:13px;font-size:15px;margin-bottom:8px" onclick="DS.view=\'plan\';DS.tab=\'plan\';rDiag()">Ver mi plan de estudio</button><button class="btn-s" style="width:100%;padding:11px" onclick="DS.view=\'intro\';rDiag()">Repetir diagnostico</button>';}
 function rDiagPlan(){var r=DS.results;var mats=r.mats;var totalPct=r.totalPct;var weak=mats.filter(function(m){return m.pct<70;});var tabs=['plan','errores'];var tabLabels=['Plan semanal','Mis errores'];var html='<div style="display:flex;gap:5px;background:var(--bg);border-radius:var(--rs);padding:4px;margin-bottom:14px">'+tabs.map(function(t,i){return'<button onclick="DS.tab=\''+t+'\';rDiag()" style="flex:1;padding:7px 4px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:'+(DS.tab===t?'var(--sf)':'transparent')+';color:'+(DS.tab===t?'var(--p)':'var(--tx2)')+'">'+tabLabels[i]+'</button>';}).join('')+'</div>';if(DS.tab==='plan'){var ws=buildDPlan(weak,totalPct);html+=ws.map(function(w,i){return'<div class="ti" style="margin-bottom:10px"><button class="th" onclick="DS.openW['+i+']=!DS.openW['+i+'];rDiag()"><div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--tx)">'+w.title+'</div><div style="font-size:12px;color:var(--tx2);margin-top:2px">'+w.sub+'</div></div><div style="width:10px;height:10px;border-radius:50%;background:'+w.color+';margin-left:10px;flex-shrink:0"></div><span class="cv '+(DS.openW[i]?'open':'')+'" style="margin-left:6px">▾</span></button><div class="tb '+(DS.openW[i]?'open':'')+'">'+ w.days.map(function(d){return'<div style="padding:10px 0;border-bottom:1px solid var(--br)"><div style="font-size:11px;font-weight:700;color:var(--p);text-transform:uppercase;margin-bottom:4px">'+d.d+'</div><div style="font-size:13px;color:var(--tx2);line-height:1.65">'+d.c+'</div></div>';}).join('')+'</div></div>';}).join('');html+='<div style="background:var(--tl);border:1px solid #5DCAA5;border-radius:var(--r);padding:13px;margin-top:6px;font-size:13px;color:var(--td);line-height:1.75"><strong>Claves del exito:</strong> Estudia 1.5-2 horas diarias. Duerme 8 horas. Haz simulacros cronometrados. Con 78% de aciertos apruebas el ECOEMS.</div>';}else{var allW=DS.results.mats.filter(function(m){return m.wrong.length>0;});if(!allW.length){html+='<div class="card" style="text-align:center;padding:30px"><div style="font-size:36px;margin-bottom:10px">🏆</div><div style="font-size:16px;font-weight:600;">Sin errores!</div></div>';}else{html+=allW.map(function(m){return'<div class="card" style="border-left:3px solid var(--c);margin-bottom:10px"><p style="font-size:12px;font-weight:600;color:var(--c);margin-bottom:9px">'+m.ic+' '+m.name+'</p>'+m.wrong.map(function(w){return'<div style="background:var(--bg);border-radius:var(--rs);padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--tx2);margin-bottom:4px">'+w.sub+'</div><div style="font-size:13px;color:var(--tx);margin-bottom:6px;line-height:1.55">'+w.q+'</div><div style="font-size:13px;color:var(--t);margin-bottom:3px">Correcta: '+w.correct+'</div><div style="font-size:12px;color:var(--tx2);font-style:italic">'+w.exp+'</div></div>';}).join('')+'</div>';}).join('');}}return html;}
 function buildDPlan(weak,totalPct){var ws=[];var w0=weak[0]?weak[0].name:'la materia más débil';var w1=weak[1]?weak[1].name:'segunda materia débil';var w2=weak[2]?weak[2].name:'Biología';var w3=weak[3]?weak[3].name:'Química';if(totalPct<60){ws.push({title:'Semanas 1-2: Fundamentos criticos',sub:'Prioridad: '+weak.slice(0,3).map(function(m){return m.name;}).join(', '),color:'var(--c)',days:[{d:'Lunes-Martes',c:'2 horas diarias a: '+w0+'. Estudia el temario completo. Haz el examen de práctica al terminar.'},{d:'Miercoles-Jueves',c:'2 horas diarias a: '+w1+'. Lee el temario. Haz ejercicios. Anota conceptos clave.'},{d:'Viernes',c:'Simulacro temático 1 hora con las materias de la semana. Registra tu resultado.'},{d:'Sabado',c:'Técnica Feynman: explica en voz alta todo lo aprendido esta semana.'},{d:'Domingo',c:'Descanso. Planifica la siguiente semana.'}]});ws.push({title:'Semanas 3-4: Materias débiles restantes',sub:weak.slice(2).map(function(m){return m.name;}).join(', ')||'Consolidación',color:'var(--c)',days:[{d:'Lunes-Martes',c:'Estudia: '+w2+'. Usa la IA de la app. Presiona Escuchar para reforzar.'},{d:'Miercoles-Jueves',c:'Estudia: '+w3+'. Revisa los temas que fallaste en el diagnóstico.'},{d:'Viernes',c:'Simulacro completo de 2 horas. Compara con la semana anterior.'},{d:'Sabado',c:'Analiza errores del simulacro. Estudia lo que sigue fallando.'},{d:'Domingo',c:'Lee un artículo para practicar comprensión lectora.'}]});}ws.push({title:'Semanas de consolidación',sub:'Materias en proceso + Habilidades',color:'var(--a)',days:[{d:'Lunes',c:'Comprensión Lectora: lee un texto de 300+ palabras y responde preguntas. Método PQR.'},{d:'Martes',c:'Habilidad Verbal: 20 ejercicios de sinónimos, antónimos y analogías.'},{d:'Miercoles',c:'Habilidad Matemática: 15 series numéricas y 10 problemas de razonamiento.'},{d:'Jueves',c:'Simulacro temático 2h: Matemáticas + Ciencias.'},{d:'Viernes',c:'Simulacro temático 1h: Humanidades (Historia, Geografía, Cívica, Español).'},{d:'Sabado',c:'Repasa errores. Usa la IA de la app para explicaciones.'},{d:'Domingo',c:'Descanso completo.'}]});ws.push({title:'Semana de simulacros intensivos',sub:'3 simulacros completos + análisis profundo',color:'var(--p)',days:[{d:'Lunes',c:'SIMULACRO COMPLETO 128 preguntas (3 horas). Registra tu puntaje.'},{d:'Martes',c:'Analiza a fondo los errores. 2 horas de estudio específico.'},{d:'Miercoles',c:'SIMULACRO COMPLETO otra vez. Meta: superar el puntaje del lunes.'},{d:'Jueves',c:'Análisis de errores. Enfasis en Habilidad Verbal y Comprensión Lectora.'},{d:'Viernes',c:'Simulacro 1.5h con solo las materias donde sigues fallando.'},{d:'Sabado',c:'Repaso de trucos y mnemotecnias. Sin exámenes.'},{d:'Domingo',c:'Descanso.'}]});ws.push({title:'Semana final: Confianza y estrategia',sub:'Últimos repasos y estrategia para el día del examen',color:'var(--t)',days:[{d:'Lunes',c:'Repaso rápido: 30 min por materia. NO estudies cosas nuevas.'},{d:'Martes',c:'Simulacro 2 horas. Practica: leer dos veces, eliminar opciones, saltar difíciles.'},{d:'Miercoles',c:'Repasa trucos clave: PEMDAS, ternas pitagóricas, tipos de texto.'},{d:'Jueves',c:'Noche anterior: revisa tus notas 30 min. Prepara: credencial, lápices, goma, agua.'},{d:'Dia del ECOEMS',c:'Desayuna bien. Llega 30 min antes. Estrategia: 1) Lee dos veces. 2) Elimina lo que SEGURO esta mal. 3) Si dudas, pasa y regresa. 4) Responde TODAS. 5) Panico: 3 respiraciones y continua.'}]});return ws;}
 
 // ── INIT ──────────────────────────────────────────────────────────
-sl();rSaved();
+initSupabase();
 speechSynthesis.getVoices();
 document.getElementById('ip').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('iu').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('ip').focus();});
